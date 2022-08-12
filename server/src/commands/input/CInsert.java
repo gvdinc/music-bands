@@ -2,7 +2,8 @@ package commands.input;
 
 
 import collections.MusicBand;
-import commands.Comand;
+import commands.Command;
+import common.Commands;
 import main.CollectionCreator;
 import main.CollectionHolder;
 import main.CommandExecutor;
@@ -11,47 +12,42 @@ import main.Tools;
 /**
  * добавить новый элемент с заданным ключом
  */
-public class CInsert extends Comand {
-    private final CollectionHolder cHolder;
+public class CInsert extends Command {
 
-    public CInsert(CollectionHolder holder) {
-        super(holder);
-        this.cHolder = holder;
+    public CInsert(Commands type, String param) {
+        super(type, param);
     }
 
-    @Override
-    public void execute(String input) {
-
-    }
 
     @Override
-    public void cascadeRun(CommandExecutor commandExecutor, String params) {
-        System.out.println(params);
-        if (Tools.regSearch(params, "\\D")) {
-            System.out.println("!!!wrong id!!!");
-            return;
+    public void execute(CollectionHolder cHolder) {
+        System.out.println(this.getParam());
+        if (Tools.regSearch(this.getParam(), "\\D")) {
+            System.out.println("!wrong id!");
         }
-        MusicBand newBand = CollectionCreator.getClientBand(commandExecutor);
 
-
-        if (newBand.isCorrect()) {
+        if (this.getReceivedBand().isCorrect()) {
             int id;
             try {
-                id = new Integer(params);
+                id = new Integer(this.getParam());
             } catch (NumberFormatException e) {
-                id = this.cHolder.getMapLength() + 1;
+                id = cHolder.getMapLength() + 1;
             }
 
-            if (!(id > this.cHolder.getMapLength())) {
-                id = this.cHolder.getMapLength() + 1;
+            if (!(id > cHolder.getMapLength())) {
+                id = cHolder.getMapLength() + 1;
             }
-            newBand.setId(id);
-            cHolder.addNewGroup(newBand);
+            this.getReceivedBand().setId(id);
+            cHolder.addNewGroup(this.getReceivedBand());
             System.out.println("finished");
             return;
         }
         System.out.println("Impossible to add");
+    }
 
+    @Override
+    public void cascadeRun(CommandExecutor commandExecutor, String params) {
+        // unusable since 11.08.22
     }
 
 }

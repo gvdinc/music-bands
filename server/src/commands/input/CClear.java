@@ -1,21 +1,20 @@
 package commands.input;
 
-import commands.Comand;
+import commands.Command;
+import common.Commands;
 import main.CollectionHolder;
 
 /**
  * очистить коллекцию
  */
-public class CClear extends Comand {
-    private final CollectionHolder cHolder;
+public class CClear extends Command {
 
-    public CClear(CollectionHolder holder) {
-        super(holder);
-        this.cHolder = holder;
+    public CClear(Commands type, String param) {
+        super(type, param);
     }
 
     @Override
-    public void execute(String input) {
+    public void execute(CollectionHolder cHolder) {
         cHolder.clearMap();
     }
 

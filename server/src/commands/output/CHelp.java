@@ -1,19 +1,20 @@
 package commands.output;
 
-import commands.Comand;
+import commands.Command;
+import common.Commands;
 import main.CollectionHolder;
 
 /**
  * вывести справку по доступным командам
  */
-public class CHelp extends Comand {
-    public CHelp(CollectionHolder holder) {
-        super(holder);
+public class CHelp extends Command {
+
+
+    public CHelp(Commands type, String param) {
+        super(type, param);
     }
 
-    @Override
-    public void execute(String input) {
-
+    public void execute(CollectionHolder cHolder) {
         System.out.print("help : display help on available server.commands\n" +
                 "info : print information about the collection to standard output (type, initialization date, number of elements, etc.)\n" +
                 "show : print to standard output all elements of the collection in string representation\n" +

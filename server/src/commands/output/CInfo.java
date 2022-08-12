@@ -1,23 +1,22 @@
 package commands.output;
 
-import commands.Comand;
+import commands.Command;
+import common.Commands;
 import main.CollectionHolder;
 
 /**
  * вывести в стандартный поток вывода информацию о коллекции
  * (тип, дата инициализации, количество элементов и т.д.)
  */
-public class CInfo extends Comand {
-    private final CollectionHolder holder;
+public class CInfo extends Command {
 
-    public CInfo(CollectionHolder holder) {
-        super(holder);
-        this.holder = holder;
+    public CInfo(Commands type, String param) {
+        super(type, param);
     }
 
     @Override
-    public void execute(String input) {
-        holder.mapInfo();
+    public void execute(CollectionHolder cHolder) {
+        cHolder.mapInfo();
     }
 
 }

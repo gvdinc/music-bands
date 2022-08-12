@@ -1,7 +1,8 @@
 package commands.input;
 
 import collections.MusicBand;
-import commands.Comand;
+import commands.Command;
+import common.Commands;
 import main.CollectionCreator;
 import main.CollectionHolder;
 import main.CommandExecutor;
@@ -10,49 +11,49 @@ import main.Tools;
 /**
  * обновить значение элемента коллекции, id которого равен заданному
  */
-public class CUpdate extends Comand {
-    private final CollectionHolder cHolder;
+public class CUpdate extends Command {
 
-    public CUpdate(CollectionHolder holder) {
-        super(holder);
-        this.cHolder = holder;
+    public CUpdate(Commands type, String param) {
+        super(type, param);
     }
 
+
     @Override
-    public void cascadeRun(CommandExecutor commandExecutor, String params) {
-        System.out.println(params);
-        if (Tools.regSearch(params, "\\D")) {
+    public void execute(CollectionHolder cHolder) {
+        System.out.println(this.getParam());
+        if (Tools.regSearch(this.getParam(), "\\D")) {
             System.out.println("!!!wrong id!!!");
             return;
         }
-        MusicBand newBand = CollectionCreator.getClientBand(commandExecutor);
 
-
-        if (newBand.isCorrect()) {
+        if (this.getReceivedBand().isCorrect()) {
             int id;
             try {
-                id = new Integer(params);
+                id = new Integer(this.getParam());
             } catch (NumberFormatException e) {
                 System.out.println("!!!wrong id!!!");
                 return;
             }
 
-            if (!(id > this.cHolder.getMapLength())) {
+            if (!(id > cHolder.getMapLength())) {
                 System.out.println("!!!wrong id!!!");
                 return;
             }
-            newBand.setId(id);
-            cHolder.addNewGroup(newBand);
+            this.getReceivedBand().setId(id);
+            cHolder.addNewGroup(this.getReceivedBand());
             System.out.println("finished");
             return;
         }
         System.out.println("Impossible to update");
-
     }
 
+    @Deprecated
     @Override
-    public void execute(String input) {
-        //cHolder.updateID();
+    public void cascadeRun(CommandExecutor commandExecutor, String params) {
+
+
     }
+
+
 
 }

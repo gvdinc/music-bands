@@ -1,21 +1,23 @@
 package commands.output;
 
-import commands.Comand;
+import commands.Command;
+import common.Commands;
 import main.CollectionHolder;
 
 /**
  * завершить программу (без сохранения в файл)
  */
-public class CExit extends Comand {
-    public CExit(CollectionHolder holder) {
-        super(holder);
-    }
+public class CExit extends Command {
+
+
+    public CExit(Commands type, String param) {
+        super(type, param);
+}
 
     @Override
-    public void execute(String input) {
+    public void execute(CollectionHolder cHolder) {
 
     }
-
 
     @Override
     public boolean getExitStatus() {

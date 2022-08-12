@@ -1,22 +1,22 @@
 package commands.input;
 
-import commands.Comand;
+import commands.Command;
+import common.Commands;
 import main.CollectionHolder;
 
 /**
  * сохранить коллекцию в файл
  */
-public class CSave extends Comand {
-    private final CollectionHolder cHolder;
+public class CSave extends Command {
 
-    public CSave(CollectionHolder holder) {
-        super(holder);
-        this.cHolder = holder;
+    public CSave(Commands type, String param) {
+        super(type, param);
     }
 
+    @Deprecated
     @Override
-    public void execute(String input) {
-        this.cHolder.exportXML();
+    public void execute(CollectionHolder cHolder) {
+        cHolder.exportXML();
     }
 
 }

@@ -1,6 +1,7 @@
 package commands;
 
 import collections.MusicBand;
+import common.Commands;
 import main.CollectionHolder;
 import main.Tools;
 
@@ -10,43 +11,20 @@ import java.util.function.Predicate;
 /**
  * вывести элементы, значение поля numberOfParticipants которых равно заданному
  */
-public class CFilterByNum extends Comand {
-    private final CollectionHolder holder;
+public class CFilterByNum extends Command {
 
-    /**
-     * Constructor
-     *
-     */
-    public CFilterByNum(CollectionHolder holder) {
-        super(holder);
-        this.holder = holder;
-    }
-
-    @Deprecated
-    public void oldExecute(String input) {
-        if (Tools.regSearch(input, "\\D")) {
-            System.out.println("!!!wrong number of participants!!!");
-            return;
-        }
-        int[] mass = this.holder.getIDs();
-        Long participants = new Long(input);
-        for (int i = 0; i != mass.length; i++) {
-            if (this.holder.getNumberOfParticipants(mass[i]) != null) {
-                if (this.holder.getNumberOfParticipants(mass[i]).equals(participants)) {
-                    this.holder.readMapElement(mass[i]);
-                }
-            }
-        }
+    public CFilterByNum(Commands type, String param) {
+        super(type, param);
     }
 
     @Override
-    public void execute(String input) { // updated with stream CommandExecutor
-        if (Tools.regSearch(input, "\\D")) {
+    public void execute(CollectionHolder cHolder) {
+        if (Tools.regSearch(this.getParam(), "\\D")) {
             System.out.println("!!!wrong number of participants!!!");
             return;
         }
-        Predicate<MusicBand> numberFilter = musicBand -> Objects.equals(musicBand.getNumberOfParticipants(), new Long(input));
-        this.holder.getMapStream().filter(numberFilter).forEach(System.out::println);
+        Predicate<MusicBand> numberFilter = musicBand -> Objects.equals(musicBand.getNumberOfParticipants(), new Long(this.getParam()));
+        cHolder.getMapStream().filter(numberFilter).forEach(System.out::println);
     }
 
 }

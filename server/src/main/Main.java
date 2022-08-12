@@ -12,6 +12,12 @@ import serverUDP.UDPServer;
  */
 public class Main {
 
+    public static void administrate(CommandExecutor commandExecutor){
+        while (!commandExecutor.getExitStatus()) {
+            commandExecutor.runCommand(KeyboardReader.input("\n(Enter command)"));
+        }
+    }
+
     public static void main(String[] args) throws Exception {
         CollectionHolder cHolder = new CollectionHolder("D:\\LabLib\\ProgLab6\\result.xml");
 
@@ -19,7 +25,7 @@ public class Main {
         while (!cHolder.checkInputStream()) {
             System.out.println("Main: the xml file pass is incorrect, please (repeat link input)!");
             try {
-                String newPass = (commandExecutor.getLine());
+                String newPass = (KeyboardReader.input());
                 cHolder = new CollectionHolder(newPass);
                 commandExecutor = new CommandExecutor(cHolder);
                 if (cHolder.checkInputStream()) {
@@ -29,14 +35,10 @@ public class Main {
             } catch (Exception ignored) {
             }
         } // trying to reach the data-file
-
-//        while (!commandExecutor.getExitStatus()) {
-//            System.out.println("\n(Enter command)");
-//            commandExecutor.runCommand();
-//        } // main cycle of getting and executing app.commands
+        administrate(commandExecutor);
 
 
-        Integer port = new Integer(commandExecutor.getLine("Set the server port: "));
+        Integer port = new Integer(KeyboardReader.input("Set the server port: "));
         UDPServer server = new UDPServer(port, cHolder, commandExecutor);
         while (true) {
             server.run();

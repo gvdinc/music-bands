@@ -21,24 +21,26 @@ public enum Commands {
     MIN_BY_ID("min_by_id", false),
     FILTER_NUM("filter_by_number_of_participants", false),
     FILTER_LESS("filter_less_than_number_of_participans", false),
-    PING("ping", false);
+    PING("ping", false),
+    SAVE("save", false);
+
     /**
      * commandName - название команды в системе
      * isHasArgs - логическая переменная, которая характеризует команду на наличие аругментов
      */
     final private String commandName;
-    final private boolean cascadeInput;
+    final private boolean elementTaking;
 
-    Commands(String commandName, boolean cascadeInput) {
+    Commands(String commandName, boolean elementTanking) {
         this.commandName = commandName;
-        this.cascadeInput = cascadeInput;
+        this.elementTaking = elementTanking;
     }
 
     public String getCommandName() {
         return commandName;
     }
 
-    public boolean isCascadeInput() {
-        return cascadeInput;
+    public boolean isElementTaking() {
+        return elementTaking;
     }
 }

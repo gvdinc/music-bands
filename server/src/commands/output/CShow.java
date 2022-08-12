@@ -1,21 +1,20 @@
 package commands.output;
 
-import commands.Comand;
+import commands.Command;
+import common.Commands;
 import main.CollectionHolder;
 
 /**
  * : вывести в стандартный поток вывода все элементы коллекции в строковом представлении
  */
-public class CShow extends Comand {
-    private final CollectionHolder holder;
+public class CShow extends Command {
 
-    public CShow(CollectionHolder holder) {
-        super(holder);
-        this.holder = holder;
+    public CShow(Commands type, String param) {
+        super(type, param);
     }
 
-    @Override
-    public void execute(String input) {
-        this.holder.readMap();
+    public void execute(CollectionHolder cHolder) {
+        cHolder.readMap();
     }
+
 }

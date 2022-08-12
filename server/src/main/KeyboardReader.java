@@ -1,34 +1,25 @@
 package main;
-
 import java.util.Scanner;
 
 
 /**
- * The KeyboardReader class provides ability to get Input from {@link #scanner}
- *
+ * The KeyboardReader class provides ability to get Input from user
  * @author Grebenkin Vadim
  */
 public class KeyboardReader {
-    private final Scanner scanner;
-
-
     /**
-     * Constructor (admin initialisation)
-     */
-    public KeyboardReader() {
-        this.scanner = new Scanner(System.in);
-        System.out.println("System: admin initialized");
-    }
-
-    /**
-     * {@link #getLine()} with special client request-message
      *
      * @return String inputted line from console
      */
-    public String getInput() {
-        System.out.print("System: admin input requested: ");
-        String input = this.getLine();
-        return input;
+    public static String input() {
+        System.out.print("Reader: input requested: ");
+        String input = ReadLine().trim();
+        return input.isEmpty() ? null : input;
+    }
+
+    public static String input(String message) {
+        System.out.println(message);
+        return input();
     }
 
     /**
@@ -36,8 +27,8 @@ public class KeyboardReader {
      *
      * @return client input
      */
-    private String getLine() {
-        String input = this.scanner.nextLine();
-        return input;
+    private static String ReadLine() {
+        Scanner scanner = new Scanner(System.in);
+        return scanner.nextLine();
     }
 }

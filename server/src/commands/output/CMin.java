@@ -1,29 +1,22 @@
 package commands.output;
 
-import commands.Comand;
+import commands.Command;
+import common.Commands;
 import main.CollectionHolder;
-import main.HolderSortTypes;
 
 /**
  * вывести любой объект из коллекции, значение поля id которого является минимальным
  */
-public class CMin extends Comand {
-    private final CollectionHolder cHolder;
+public class CMin extends Command {
 
-    public CMin(CollectionHolder holder) {
-        super(holder);
-        this.cHolder = holder;
+    public CMin(Commands type, String param) {
+        super(type, param);
     }
 
     @Override
-    public void execute(String input) { // min by id
-        String res = (this.cHolder.getMinGroup().toString());
+    public void execute(CollectionHolder cHolder) {
+        String res = (cHolder.getMinGroup().toString());
         System.out.println(res != null ? "group with minimal id: " + res : "empty collection");
     }
 
-    @Deprecated
-    public void oldExecute(String input) { // min by id
-        this.cHolder.sort(HolderSortTypes.DEFAULT);
-        this.cHolder.ReadCollectionElement(1);
-    }
 }

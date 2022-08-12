@@ -8,30 +8,30 @@ import java.util.Locale;
 import java.util.Objects;
 
 public class CollectionCreator {
-    public static MusicBand getClientBand(CommandExecutor commandExecutor) {
+    public static MusicBand getClientBand() {
         MusicBand newBand = new MusicBand();
 
         while (!(newBand.isCorrect())) {
             newBand = new MusicBand();
 
             // setting name of new band
-            newBand.setName(getName(commandExecutor));
+            newBand.setName(getName());
 
             // setting coordinates
-            newBand.setCoordinates(getCoordinates(commandExecutor));
+            newBand.setCoordinates(getCoordinates());
 
             // setting genre
-            newBand.setGenre(getGenre(commandExecutor));
+            newBand.setGenre(getGenre());
 
             // setting album
-            Album album = getBestAlbum(commandExecutor);
+            Album album = getBestAlbum();
             if (album != null) {
                 newBand.setBestAlbum(album);
             }
 
 
             // setting number of participants
-            Long numberOfParts = getNumberOfParticipants(commandExecutor);
+            Long numberOfParts = getNumberOfParticipants();
             if (numberOfParts != null) {
                 newBand.setNumberOfParticipants(numberOfParts);
             }
@@ -41,34 +41,34 @@ public class CollectionCreator {
         return newBand;
     }
 
-    protected static String getName(CommandExecutor commandExecutor) {
+    protected static String getName() {
         String name;
-        name = commandExecutor.getLine("(Enter name of music band)");
+        name = KeyboardReader.input("(Enter name of music band)");
         while (name == null || Objects.equals(name, "null")) {
             System.out.println("Wrong name");
-            name = commandExecutor.getLine("(Enter name of music band)");
+            name = KeyboardReader.input("(Enter name of music band)");
         }
         return name;
     }
 
-    protected static Coordinates getCoordinates(CommandExecutor commandExecutor) {
+    protected static Coordinates getCoordinates() {
         Coordinates resCord = new Coordinates();
         String[] coordinates = null;
         while (!resCord.isCorrect()) {
             while (coordinates == null || coordinates.length != 2) {
                 System.out.println("Input coordinates x and y (float, separator = \" \")");
-                coordinates = commandExecutor.getLine().split(" ");
+                coordinates = Objects.requireNonNull(KeyboardReader.input()).split(" ");
             }
             resCord.setAll(new Float(coordinates[0]), new Float(coordinates[1]));
         }
         return resCord;
     }
 
-    protected static String getGenre(CommandExecutor commandExecutor) {
+    protected static String getGenre() {
         String genre = null;
         while (genre == null || (!genre.equals("ROCK") && !genre.equals("PSYCHEDELIC_ROCK") && !genre.equals("RAP") && !genre.equals("HIP_HOP"))) {
             try {
-                genre = (commandExecutor.getLine("Choose genre (ROCK,\n" +
+                genre = (KeyboardReader.input("Choose genre (ROCK,\n" +
                         "    PSYCHEDELIC_ROCK,\n" +
                         "    RAP,\n" +
                         "    HIP_HOP)").toUpperCase(Locale.ROOT));
@@ -79,43 +79,53 @@ public class CollectionCreator {
         return genre;
     }
 
-    protected static Album getBestAlbum(CommandExecutor commandExecutor) {
+    protected static Album getBestAlbum() {
         Album resAlbum = null;
-        String[] album = new String[1];
-        boolean flag = true;
-        while (flag) {
-            System.out.println("Input best Album (String name and float sales), separator = \" \", (input \"null\" to deny)");
-            album = commandExecutor.getLine().split(" ");
-            if (Objects.equals(album[0], "null") && !album[0].isEmpty()) {
-                return null;
+        boolean notReady = true;
+        String name = null;
+        String sales = null;
+        name = KeyboardReader.input("Input best Album name,(input \"null\" to deny)");
+        if (name == null) return null;
+
+        while (notReady) {
+            sales = KeyboardReader.input("Input best Album sales (float)");
+            if (sales == null) {
+                System.out.println("wrong input");
+                break;
             } else {
+                Float floatSales = null;
                 try {
-                    resAlbum = new Album().setAll(album[0], new Float(album[1]));
-                    flag = false;
+                    floatSales = new Float(sales);
                 } catch (NumberFormatException e) {
-                    flag = true;
+                    System.out.println("wrong input, album creation denied");
                 }
+                if (floatSales == null) {
+                    continue;
+                }
+                resAlbum = new Album().setAll(name, floatSales);
+                notReady = false;
             }
         }
         return resAlbum;
     }
 
-    protected static Long getNumberOfParticipants(CommandExecutor commandExecutor) {
+
+    protected static Long getNumberOfParticipants() {
         Long resNumber = null;
-        String input = "";
-        boolean flag = false;
-        while (!Objects.equals(input, "null") || input.isEmpty() || flag) {
-            input = commandExecutor.getLine("Input number of participants (input \"null\" to deny)");
-            if (!Objects.equals(input, "null") && !input.isEmpty()) {
-                try {
-                    resNumber = new Long(input);
-                    flag = false;
-                } catch (NumberFormatException e) {
-                    flag = true;
-                }
-            } else if (Objects.equals(input, "null") && !input.isEmpty()) {
+        String input = null;
+        boolean notReady = true;
+        while (input == null || notReady) {
+            input = KeyboardReader.input("Input number of participants (input \"null\" to deny)");
+            if (input == null) {
                 return null;
             }
+            try {
+                resNumber = new Long(input);
+                notReady = false;
+            } catch (NumberFormatException e) {
+                System.out.println("wrong number - "+ input);
+            }
+
         }
         return resNumber;
     }

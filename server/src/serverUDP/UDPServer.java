@@ -49,7 +49,7 @@ public class UDPServer implements Runnable {
             }
             if (cmd.getType() == Commands.EXIT) break;
             if (cmd.getType() == Commands.PING) connector.reconnect();
-            if (!cmd.getType().isCascadeInput()) {
+            if (!cmd.getType().isElementTaking()) {
                 try {
                     this.commandExecutor.runCommand(cmd, this.preparator);
                 } catch (FileNotFoundException e) {
