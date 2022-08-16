@@ -1,6 +1,7 @@
-package commands;
+package commands.others;
 
 import collections.MusicBand;
+import common.Command;
 import common.Commands;
 import main.CollectionHolder;
 import main.Tools;

@@ -1,93 +1,140 @@
 package serverUDP;
 
-
 import common.Command;
 import common.Commands;
-import common.Serializer;
 import main.CollectionHolder;
 import main.CommandExecutor;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
+import java.util.Date;
 
 public class UDPServer implements Runnable {
-    private final int port;
     private final CollectionHolder cHolder;
-    private final CommandExecutor commandExecutor;
     private final Connector connector;
-    private DatagramSocket dSocket;
-    private boolean exitStatus = false;
     private final Preparator preparator;
+    private ServerState serverState = ServerState.OFFLINE;
+    private Command receivedCmd;
 
-    public UDPServer(int port, CollectionHolder cHolder, CommandExecutor commandExecutor) throws SocketException {
-        this.port = port;
+
+
+    public UDPServer(int port, CollectionHolder cHolder) throws SocketException {
         this.connector = new Connector(port);
         this.cHolder = cHolder;
-        this.commandExecutor = commandExecutor;
         this.preparator = new Preparator();
+        launchServer();
+    }
+
+    public void turnServerOff(){
+        if (this.serverState == ServerState.OFFLINE) return;
+        disconnectClient();
+        this.connector.closeSocket();
+        this.serverState = ServerState.OFFLINE;
+        System.out.println("Server down");
+    }
+
+    public void launchServer(){
+        this.connector.disconnect();
+        this.serverState = ServerState.UNCONNECTED;
+    }
+
+    @Override
+    public void run() {
+        CommandExecutor executor = new CommandExecutor(this.cHolder);
+
+    while (this.serverState != ServerState.OFFLINE) {
+            switch (this.serverState) {
+
+                case OPERATING: {
+                    if (!this.connector.isConnected()) { disconnectClient(); continue;}
+                    try {
+                        this.receivedCmd = connector.getCommand();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        disconnectClient();
+                        continue;
+                    }
+                    if ((this.receivedCmd == null) || receivedCmd.getType() == Commands.EXIT) {
+                        disconnectClient(); continue;
+                    }
+                    switch (receivedCmd.getType()) {
+                        case PING:
+                        case CONNECT: {
+                            connector.sendMessage(getServerState().toString() + " " + this.connector.getClient().getSenderAddress());
+                            continue;
+                        }
+                        case SAVE: {
+                            connector.sendMessage("cheater");
+                            continue;
+                        }
+                        default:
+                        {
+                            try {
+                                executor.runCommand(receivedCmd, preparator);
+                            } catch (FileNotFoundException e) {
+                                e.printStackTrace();
+                                connector.sendMessage("FAILED");
+                            }
+                        }
+                    }
+                    continue;
+                }
+
+                case UNCONNECTED: {
+                    try {
+                        this.connector.meetClient();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        System.out.println("Server: shutting down");
+                        turnServerOff();
+                        break;
+                    }
+                    if (this.connector.isConnected()) {
+                        this.serverState = ServerState.RECEIVING;
+                    }
+                    continue;
+                }
+            }
+        }
+    }
+
+    public ServerState getServerState() {
+        return serverState;
+    }
+
+    private void disconnectClient(){
+        if (serverState == ServerState.OFFLINE) return;
+        System.out.println("Disconnecting client " + (this.connector.getClient() != null ? this.connector.getClient().getSenderAddress() : "NO CLIENT"));
+        this.connector.disconnect();
+        this.serverState = ServerState.UNCONNECTED;
+    }
+
+    public void setServerState(ServerState serverState) {
+        this.serverState = serverState;
     }
 
     private static String encode(byte[] buffer) {
         return new String(buffer, StandardCharsets.UTF_8).trim();
     }
-
-    @Override
-    public void run() {
-        this.dSocket = this.connector.getDSocket();
-
-        while (!exitStatus) {
-
-            Command cmd = null;
-            cmd = getCommand(1024);
-            while (cmd == null) {
-                this.connector.sendMessage("wrong cmd - repeat input!!!");
-                cmd = getCommand(1024);
-            }
-            if (cmd.getType() == Commands.EXIT) break;
-            if (cmd.getType() == Commands.PING) connector.reconnect();
-            if (!cmd.getType().isElementTaking()) {
-                try {
-                    this.commandExecutor.runCommand(cmd, this.preparator);
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                this.commandExecutor.runCascadeCommand(cmd, this.preparator, this.connector);
-            }
-            this.preparator.readFromFile();
-            connector.sendMessage(this.preparator.flush());
-
-        }
-    }
-
-    private Command getCommand(int bufferLength) {
-        byte[] receivingDataBuffer = new byte[bufferLength];
-        DatagramPacket inputPacket = new DatagramPacket(receivingDataBuffer, receivingDataBuffer.length);
-        System.out.println("waiting for client's command");
-        try {
-            this.dSocket.receive(inputPacket);
-            while (inputPacket.getPort() != this.connector.getClient().getSenderPort()) {
-                System.out.println("get out of here funked Zayats...");
-                this.dSocket.receive(inputPacket);
-            }
-        } catch (RuntimeException | IOException runtimeException) {
-            System.out.println("Client disconnected");
-            this.exitStatus = true;
-            return null;
-        }
-        Command cmd;
-        cmd = (Command) Serializer.deserialize(inputPacket.getData());
-        if (cmd.getType() != null) {
-            System.out.println("Sent from the client: " + cmd.getType().getCommandName() + " " + cmd.getArgs());
-            return cmd;
-        } else {
-            cmd = new Command(Commands.PING, "wrong command");
-            return cmd;
-        }
-    }
 }
 
+//    Command cmd = getCommand();
+//            while (cmd == null) {
+//                this.connector.sendMessage("wrong cmd - repeat input!!!");
+//                cmd = getCommand(1024);
+//            }
+//            if (cmd.getType() == Commands.EXIT) break;
+//            if (cmd.getType() == Commands.PING) connector.reconnect();
+//            if (!cmd.getType().isElementTaking()) {
+//                try {
+//                    executor.runCommand(cmd, this.preparator);
+//                } catch (FileNotFoundException e) {
+//                    e.printStackTrace();
+//                }
+//            } else {
+//                executor.runCascadeCommand(cmd, this.preparator, this.connector);
+//            }
+//            this.preparator.readFromFile();
+//            connector.sendMessage(this.preparator.flush());

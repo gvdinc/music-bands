@@ -1,12 +1,10 @@
-package commands;
+package commands.others;
 
 import collections.MusicBand;
+import common.Command;
 import common.Commands;
 import main.CollectionHolder;
-import main.CommandExecutor;
-import main.KeyboardReader;
 
-import java.util.Objects;
 import java.util.Stack;
 import java.util.function.Predicate;
 

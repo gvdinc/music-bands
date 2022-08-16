@@ -1,19 +1,18 @@
 package main;
 
-import commands.*;
 import commands.input.CClear;
 import commands.input.CInsert;
 import commands.input.CSave;
 import commands.input.CUpdate;
+import commands.others.*;
 import commands.output.*;
+import common.Command;
 import common.Commands;
-import serverUDP.Connector;
 import serverUDP.DualStream;
 import serverUDP.Preparator;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Locale;
 
@@ -114,13 +113,13 @@ public class CommandExecutor {
      * @param cmd
      * @param preparator
      */
-    public void runCommand(common.Command cmd, Preparator preparator) throws FileNotFoundException {
+    public void runCommand(Command cmd, Preparator preparator) throws FileNotFoundException {
         PrintStream st = new PrintStream(new FileOutputStream("output.txt"));
         PrintStream dual = new DualStream(System.out, st);
         System.setErr(dual);
         System.setOut(dual);
 
-        String input = cmd.getType().getCommandName() + " " + cmd.getArgs();
+        String input = cmd.getType().getCommandName() + " " + cmd.getParam();
         this.runCommand(input);
         st.flush();
         st.close();
@@ -198,7 +197,5 @@ public class CommandExecutor {
         return cmd;
     }
 
-    public void runCascadeCommand(common.Command cmd, Preparator preparator, Connector connector) {
-        connector.sendMessage("success");
-    }
+
 }

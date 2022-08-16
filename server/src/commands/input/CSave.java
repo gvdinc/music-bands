@@ -1,6 +1,6 @@
 package commands.input;
 
-import commands.Command;
+import common.Command;
 import common.Commands;
 import main.CollectionHolder;
 

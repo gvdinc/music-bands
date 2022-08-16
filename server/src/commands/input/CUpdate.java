@@ -1,9 +1,7 @@
 package commands.input;
 
-import collections.MusicBand;
-import commands.Command;
+import common.Command;
 import common.Commands;
-import main.CollectionCreator;
 import main.CollectionHolder;
 import main.CommandExecutor;
 import main.Tools;

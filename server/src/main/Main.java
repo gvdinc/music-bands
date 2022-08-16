@@ -3,6 +3,8 @@ package main;
 
 import serverUDP.UDPServer;
 
+import java.net.SocketException;
+
 
 /**
  * Main class - Entrance point
@@ -12,13 +14,16 @@ import serverUDP.UDPServer;
  */
 public class Main {
 
-    public static void administrate(CommandExecutor commandExecutor){
+    public static void administrate(CommandExecutor commandExecutor) {
         while (!commandExecutor.getExitStatus()) {
-            commandExecutor.runCommand(KeyboardReader.input("\n(Enter command)"));
+            String input = KeyboardReader.input("\n(Enter command)");
+            commandExecutor.runCommand(input);
         }
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
+
+        //
         CollectionHolder cHolder = new CollectionHolder("D:\\LabLib\\ProgLab6\\result.xml");
 
         CommandExecutor commandExecutor = new CommandExecutor(cHolder);
@@ -35,15 +40,42 @@ public class Main {
             } catch (Exception ignored) {
             }
         } // trying to reach the data-file
-        administrate(commandExecutor);
 
 
-        Integer port = new Integer(KeyboardReader.input("Set the server port: "));
-        UDPServer server = new UDPServer(port, cHolder, commandExecutor);
-        while (true) {
-            server.run();
-            commandExecutor.runCommand("save");
+    MAIN:  while (true) {
+            String input = KeyboardReader.input("\n\n\nturn off - 0\nadmin mode-1\nserver mode - 2");
+            switch (input.trim()) {
+                case "0":
+                    break MAIN;
+                case "1":
+                    administrate(commandExecutor);
+                    continue;
+                case "2": {
+                    Integer port = null;
+                    try {
+                        String portInput = KeyboardReader.input("Set the server port: ");
+                        if (portInput == null) continue;
+                        port = new Integer(portInput);
+                    } catch (RuntimeException e) {
+                        System.out.println("wrong port");
+                    }
+                    UDPServer server = null;
+                    try {
+                        server = new UDPServer(port, cHolder);
+                    } catch (SocketException e) {
+                        System.out.println("port "+ port + " is occupied");
+                        continue;
+                    }
+                    server.launchServer();
+                    server.run();
+                    server.turnServerOff();
+                    System.out.println("it's ok");
+                    //commandExecutor.runCommand("save");
+                }
+            }
+
         }
+
 
     }
 

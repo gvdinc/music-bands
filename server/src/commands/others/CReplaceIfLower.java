@@ -1,5 +1,6 @@
-package commands;
+package commands.others;
 
+import common.Command;
 import common.Commands;
 import main.CollectionHolder;
 

@@ -6,14 +6,14 @@ public enum Commands {
      * Перечислены команды, которые имеют реализацию на сервере.
      */
 
-    INFO("info", false),
-    HELP("help", false),
-    SHOW("show", false),
-    INSERT("insert", true),
-    UPDATE("update", true),
+    INFO(   "info", false),
+    HELP(   "help", false),
+    SHOW(   "show", false),
+    INSERT( "insert", true),
+    UPDATE( "update", true),
     REMOVE_KEY("remove_key", true),
     CLEAR("clear", false),
-    EXECUTE("execute_script", false),
+    EXECUTE("   execute_script", false),
     EXIT("exit", false),
     REMOVE_LOWER("remove_lower", true),
     REPLACE_IF_LOWER("replace_if_lower", true),
@@ -22,7 +22,8 @@ public enum Commands {
     FILTER_NUM("filter_by_number_of_participants", false),
     FILTER_LESS("filter_less_than_number_of_participans", false),
     PING("ping", false),
-    SAVE("save", false);
+    SAVE("save", false),
+    CONNECT("connect", false); // special command to connect the server
 
     /**
      * commandName - название команды в системе
