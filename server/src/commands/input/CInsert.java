@@ -43,9 +43,4 @@ public class CInsert extends Command {
         System.out.println("Impossible to add");
     }
 
-    @Override
-    public void cascadeRun(CommandExecutor commandExecutor, String params) {
-        // unusable since 11.08.22
-    }
-
 }

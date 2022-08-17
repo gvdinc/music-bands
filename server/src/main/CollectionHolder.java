@@ -3,6 +3,7 @@ package main;
 import collections.Album;
 import collections.Coordinates;
 import collections.MusicBand;
+import collections.StringXMLItem;
 import main.Comparators.ComparatorID;
 
 import java.io.*;

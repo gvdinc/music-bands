@@ -1,8 +1,8 @@
 package common;
 
-import collections.MusicBand;
 import collections.CollectionCreator;
-import main.CollectionHolder;
+import collections.MusicBand;
+
 import java.io.Serializable;
 
 /**
@@ -19,13 +19,6 @@ public abstract class Command implements Serializable {
         this.param = param;     // can be null
         if (this.type.isElementTaking()) initElement();
     }
-
-    /**
-     * procedure of command execution when elementTaking is false
-     *
-     * @param cHolder - database to operate with
-     */
-    public abstract void execute(CollectionHolder cHolder);
 
     /**
      * input element while you create Cmd object

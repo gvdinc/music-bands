@@ -1,8 +1,6 @@
-package main;
+package collections;
 
-import collections.Album;
-import collections.Coordinates;
-import collections.MusicBand;
+import client.KeyboardReader;
 
 import java.util.Locale;
 import java.util.Objects;

@@ -1,6 +1,4 @@
-package main;
-
-import collections.StringXMLItem;
+package collections;
 
 import java.io.*;
 import java.util.regex.Matcher;

@@ -1,8 +1,5 @@
 package collections;
 
-
-import main.Tools;
-
 /**
  * object for {@link MusicBand} contains coordinates of headquarters of the band
  */

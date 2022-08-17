@@ -1,6 +1,5 @@
 package collections;
 
-import main.Tools;
 
 /**
  * Album object for {@link MusicBand}

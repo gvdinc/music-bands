@@ -1,4 +1,6 @@
-package main;
+package collections;
+
+import main.CollectionHolder;
 
 import java.util.Objects;
 

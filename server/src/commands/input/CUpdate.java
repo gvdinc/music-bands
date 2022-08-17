@@ -45,13 +45,5 @@ public class CUpdate extends Command {
         System.out.println("Impossible to update");
     }
 
-    @Deprecated
-    @Override
-    public void cascadeRun(CommandExecutor commandExecutor, String params) {
-
-
-    }
-
-
 
 }
