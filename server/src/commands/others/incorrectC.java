@@ -1,6 +1,6 @@
 package commands.others;
 
-import common.Command;
+import commands.Command;
 import common.Commands;
 import main.CollectionHolder;
 
@@ -15,8 +15,8 @@ public class incorrectC extends Command {
     }
 
     @Override
-    public void execute(CollectionHolder cHolder) {
-
+    public boolean execute(CollectionHolder cHolder) {
+        return false;
     }
 
 }

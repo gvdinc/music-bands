@@ -1,5 +1,6 @@
 package commands.server;
-import common.Command;
+import commands.Command;
+import common.CTransitPack;
 import common.Commands;
 import main.CollectionHolder;
 
@@ -9,8 +10,12 @@ public class CConnect extends Command {
         super(type, param);
     }
 
-    @Override
-    public void execute(CollectionHolder cHolder) {
+    public CConnect(CTransitPack transitPack) {
+        super(transitPack);
+    }
 
+    @Override
+    public boolean execute(CollectionHolder cHolder) {
+        return true;
     }
 }

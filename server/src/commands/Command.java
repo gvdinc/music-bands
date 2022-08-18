@@ -1,7 +1,10 @@
-package common;
+package commands;
 
 import collections.CollectionCreator;
 import collections.MusicBand;
+import common.CTransitPack;
+import common.Commands;
+import main.CollectionHolder;
 
 import java.io.Serializable;
 
@@ -19,6 +22,19 @@ public abstract class Command implements Serializable {
         this.param = param;     // can be null
         if (this.type.isElementTaking()) initElement();
     }
+
+    public Command(CTransitPack transitPack){
+        this.type = transitPack.getType();
+        this.param = transitPack.getParam();
+        this.receivedBand = transitPack.getReceivedBand();
+    }
+
+    /**
+     * procedure of command execution when elementTaking is false
+     *
+     * @param cHolder - database to operate with
+     */
+    public abstract boolean execute(CollectionHolder cHolder);
 
     /**
      * input element while you create Cmd object

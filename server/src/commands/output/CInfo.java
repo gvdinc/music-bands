@@ -1,6 +1,7 @@
 package commands.output;
 
-import common.Command;
+import commands.Command;
+import common.CTransitPack;
 import common.Commands;
 import main.CollectionHolder;
 
@@ -14,9 +15,14 @@ public class CInfo extends Command {
         super(type, param);
     }
 
+    public CInfo(CTransitPack transitPack) {
+        super(transitPack);
+    }
+
     @Override
-    public void execute(CollectionHolder cHolder) {
+    public boolean execute(CollectionHolder cHolder) {
         cHolder.mapInfo();
+        return true;
     }
 
 }

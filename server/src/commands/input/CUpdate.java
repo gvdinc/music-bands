@@ -1,9 +1,9 @@
 package commands.input;
 
-import common.Command;
+import commands.Command;
+import common.CTransitPack;
 import common.Commands;
 import main.CollectionHolder;
-import main.CommandExecutor;
 import main.Tools;
 
 /**
@@ -15,13 +15,17 @@ public class CUpdate extends Command {
         super(type, param);
     }
 
+    public CUpdate(CTransitPack transitPack) {
+        super(transitPack);
+    }
+
 
     @Override
-    public void execute(CollectionHolder cHolder) {
+    public boolean execute(CollectionHolder cHolder) {
         System.out.println(this.getParam());
         if (Tools.regSearch(this.getParam(), "\\D")) {
             System.out.println("!!!wrong id!!!");
-            return;
+            return false;
         }
 
         if (this.getReceivedBand().isCorrect()) {
@@ -30,19 +34,20 @@ public class CUpdate extends Command {
                 id = new Integer(this.getParam());
             } catch (NumberFormatException e) {
                 System.out.println("!!!wrong id!!!");
-                return;
+                return false;
             }
 
             if (!(id > cHolder.getMapLength())) {
                 System.out.println("!!!wrong id!!!");
-                return;
+                return false;
             }
             this.getReceivedBand().setId(id);
             cHolder.addNewGroup(this.getReceivedBand());
             System.out.println("finished");
-            return;
+            return true;
         }
         System.out.println("Impossible to update");
+        return false;
     }
 
 

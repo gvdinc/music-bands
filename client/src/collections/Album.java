@@ -1,10 +1,12 @@
 package collections;
 
 
+import java.io.Serializable;
+
 /**
  * Album object for {@link MusicBand}
  */
-public class Album {
+public class Album implements Serializable {
     /**
      * The name of Album
      */

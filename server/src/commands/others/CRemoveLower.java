@@ -1,7 +1,8 @@
 package commands.others;
 
 import collections.MusicBand;
-import common.Command;
+import commands.Command;
+import common.CTransitPack;
 import common.Commands;
 import main.CollectionHolder;
 
@@ -18,8 +19,12 @@ public class CRemoveLower extends Command {
         super(type, param);
     }
 
+    public CRemoveLower(CTransitPack transitPack) {
+        super(transitPack);
+    }
+
     @Override
-    public void execute(CollectionHolder cHolder) {
+    public boolean execute(CollectionHolder cHolder) {
         Long numberOfParticipants = this.getReceivedBand().getNumberOfParticipants();
         Stack<Integer> queueToDelete = new Stack<>();
         Predicate<MusicBand> numberFilter = musicBand -> musicBand.getNumberOfParticipants() != null && musicBand.getNumberOfParticipants() < numberOfParticipants;
@@ -27,7 +32,7 @@ public class CRemoveLower extends Command {
             queueToDelete.push(mB.getId());
         });
         queueToDelete.forEach(cHolder::deleteElement);
-
+        return true;
     }
 
 }

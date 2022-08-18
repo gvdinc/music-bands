@@ -1,6 +1,7 @@
 package commands.output;
 
-import common.Command;
+import commands.Command;
+import common.CTransitPack;
 import common.Commands;
 import main.CollectionHolder;
 
@@ -14,7 +15,11 @@ public class CHelp extends Command {
         super(type, param);
     }
 
-    public void execute(CollectionHolder cHolder) {
+    public CHelp(CTransitPack transitPack) {
+        super(transitPack);
+    }
+
+    public boolean execute(CollectionHolder cHolder) {
         System.out.print("help : display help on available server.commands\n" +
                 "info : print information about the collection to standard output (type, initialization date, number of elements, etc.)\n" +
                 "show : print to standard output all elements of the collection in string representation\n" +
@@ -31,6 +36,7 @@ public class CHelp extends Command {
                 "min_by_id : display any object from the collection whose id field value is the minimum\n" +
                 "filter_by_number_of_participants numberOfParticipants : display elements whose numberOfParticipants field value is equal to the given one\n" +
                 "filter_less_than_number_of_participants numberOfParticipants : display elements whose numberOfParticipants field value is less than the given value\n\n");
+    return true;
     }
 
 }

@@ -1,6 +1,7 @@
 package commands.input;
 
-import common.Command;
+import commands.Command;
+import common.CTransitPack;
 import common.Commands;
 import main.CollectionHolder;
 
@@ -13,10 +14,14 @@ public class CSave extends Command {
         super(type, param);
     }
 
-    @Deprecated
+    public CSave(CTransitPack transitPack) {
+        super(transitPack);
+    }
+
     @Override
-    public void execute(CollectionHolder cHolder) {
+    public boolean execute(CollectionHolder cHolder) {
         cHolder.exportXML();
+        return true;
     }
 
 }

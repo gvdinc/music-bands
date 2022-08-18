@@ -43,7 +43,7 @@ public class Main {
 
 
     MAIN:  while (true) {
-            String input = KeyboardReader.input("\n\n\nturn off - 0\nadmin mode-1\nserver mode - 2");
+            String input = /*KeyboardReader.input("\n\n\nturn off - 0\nadmin mode-1\nserver mode - 2")*/ "2";
             switch (input.trim()) {
                 case "0":
                     break MAIN;
@@ -53,7 +53,7 @@ public class Main {
                 case "2": {
                     Integer port = null;
                     try {
-                        String portInput = KeyboardReader.input("Set the server port: ");
+                        String portInput = /*KeyboardReader.input("Set the server port: ")*/ "50000";
                         if (portInput == null) continue;
                         port = new Integer(portInput);
                     } catch (RuntimeException e) {

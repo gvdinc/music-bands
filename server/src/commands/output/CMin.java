@@ -1,6 +1,7 @@
 package commands.output;
 
-import common.Command;
+import commands.Command;
+import common.CTransitPack;
 import common.Commands;
 import main.CollectionHolder;
 
@@ -13,10 +14,15 @@ public class CMin extends Command {
         super(type, param);
     }
 
+    public CMin(CTransitPack transitPack) {
+        super(transitPack);
+    }
+
     @Override
-    public void execute(CollectionHolder cHolder) {
+    public boolean execute(CollectionHolder cHolder) {
         String res = (cHolder.getMinGroup().toString());
         System.out.println(res != null ? "group with minimal id: " + res : "empty collection");
+        return true;
     }
 
 }

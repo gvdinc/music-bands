@@ -1,7 +1,9 @@
 package commands.others;
 
 import collections.MusicBand;
-import common.Command;
+import commands.Command;
+
+import common.CTransitPack;
 import common.Commands;
 import main.CollectionHolder;
 import main.Tools;
@@ -18,14 +20,19 @@ public class CFilterByNum extends Command {
         super(type, param);
     }
 
+    public CFilterByNum(CTransitPack transitPack) {
+        super(transitPack);
+    }
+
     @Override
-    public void execute(CollectionHolder cHolder) {
+    public boolean execute(CollectionHolder cHolder) {
         if (Tools.regSearch(this.getParam(), "\\D")) {
             System.out.println("!!!wrong number of participants!!!");
-            return;
+            return false;
         }
         Predicate<MusicBand> numberFilter = musicBand -> Objects.equals(musicBand.getNumberOfParticipants(), new Long(this.getParam()));
         cHolder.getMapStream().filter(numberFilter).forEach(System.out::println);
+        return true;
     }
 
 }

@@ -4,7 +4,7 @@ public class Main {
     public static void main(String[] args) {
         UDPClient client = null;
 
-        int serverPort = new Integer(KeyboardReader.input("Print the server port: "));
+        int serverPort = new Integer(KeyboardReader.input("Input the server port: "));
         client = new UDPClient(serverPort);
         client.run();
 

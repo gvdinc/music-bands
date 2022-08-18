@@ -3,10 +3,12 @@ package collections;
 
 import main.Tools;
 
+import java.io.Serializable;
+
 /**
  * object for {@link MusicBand} contains coordinates of headquarters of the band
  */
-public class Coordinates {
+public class Coordinates implements Serializable {
 
     /**
      * coordinate x

@@ -1,7 +1,8 @@
 package commands.others;
 
 import collections.MusicBand;
-import common.Command;
+import commands.Command;
+import common.CTransitPack;
 import common.Commands;
 import main.CollectionHolder;
 import main.Tools;
@@ -19,11 +20,15 @@ public class CRemoveLowerKey extends Command {
         super(type, param);
     }
 
+    public CRemoveLowerKey(CTransitPack transitPack) {
+        super(transitPack);
+    }
+
     @Override
-    public void execute(CollectionHolder cHolder) {
+    public boolean execute(CollectionHolder cHolder) {
         if (Tools.regSearch(this.getParam(), "\\D")) {
             System.out.println("!!!wrong id!!!");
-            return;
+            return false;
         }
 
         Stack<Integer> queueToDelete = new Stack<>();
@@ -32,6 +37,7 @@ public class CRemoveLowerKey extends Command {
             queueToDelete.push(mB.getId());
         });
         queueToDelete.forEach(cHolder::deleteElement);
+        return true;
     }
 
 }

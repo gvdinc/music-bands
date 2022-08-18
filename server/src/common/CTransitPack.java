@@ -1,31 +1,23 @@
 package common;
 
-import collections.MusicBand;
 import collections.CollectionCreator;
-import main.CollectionHolder;
+import collections.MusicBand;
+
 import java.io.Serializable;
 
-/**
- * abstract class for all command objects
- */
-public abstract class Command implements Serializable {
+public class CTransitPack implements Serializable {
+
+
     private static final long serialVersionUID = 1L;
     private final Commands type;
     private final String param;
     private MusicBand receivedBand;
 
-    public Command(Commands type, String param) {
+    public CTransitPack(Commands type, String param) {
         this.type = type;
         this.param = param;     // can be null
         if (this.type.isElementTaking()) initElement();
     }
-
-    /**
-     * procedure of command execution when elementTaking is false
-     *
-     * @param cHolder - database to operate with
-     */
-    public abstract void execute(CollectionHolder cHolder);
 
     /**
      * input element while you create Cmd object

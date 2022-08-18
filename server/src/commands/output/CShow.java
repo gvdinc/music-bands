@@ -1,6 +1,7 @@
 package commands.output;
 
-import common.Command;
+import commands.Command;
+import common.CTransitPack;
 import common.Commands;
 import main.CollectionHolder;
 
@@ -13,8 +14,13 @@ public class CShow extends Command {
         super(type, param);
     }
 
-    public void execute(CollectionHolder cHolder) {
+    public CShow(CTransitPack transitPack) {
+        super(transitPack);
+    }
+
+    public boolean execute(CollectionHolder cHolder) {
         cHolder.readMap();
+        return true;
     }
 
 }

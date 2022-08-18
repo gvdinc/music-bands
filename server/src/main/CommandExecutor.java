@@ -1,15 +1,17 @@
 package main;
 
+import commands.Command;
 import commands.input.CClear;
 import commands.input.CInsert;
 import commands.input.CSave;
 import commands.input.CUpdate;
 import commands.others.*;
 import commands.output.*;
-import common.Command;
+import commands.server.CConnect;
+import commands.server.CPing;
+import common.CTransitPack;
 import common.Commands;
 import serverUDP.DualStream;
-import serverUDP.Preparator;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -56,7 +58,7 @@ public class CommandExecutor {
     }
 
 
-//    public void runCommand(common.Command cmmd) {
+//    public void runCommand(commands.Command cmmd) {
 //        String input = cmmd.getType().getCommandName() + " " + cmmd.getArgs();
 //        String[] inputs = input.trim().split(" ", 2);
 //        Command cmd = this.initializeCommand(inputs[0]);
@@ -111,18 +113,13 @@ public class CommandExecutor {
      * Executes command {@link #runCommand(String)} (but with input request)
      *
      * @param cmd
-     * @param preparator
      */
-    public void runCommand(Command cmd, Preparator preparator) throws FileNotFoundException {
+    public void runCommand(Command cmd) throws FileNotFoundException {
         PrintStream st = new PrintStream(new FileOutputStream("output.txt"));
-        PrintStream dual = new DualStream(System.out, st);
-        System.setErr(dual);
-        System.setOut(dual);
-
-        String input = cmd.getType().getCommandName() + " " + cmd.getParam();
-        this.runCommand(input);
-        st.flush();
-        st.close();
+        setDualStream(st);
+        boolean res = cmd.execute(this.cHolder);
+        if (!res) { System.out.println("/FAILED"); }
+        endStream(st);
     }
 
     /**
@@ -197,5 +194,85 @@ public class CommandExecutor {
         return cmd;
     }
 
+    public static Command unpackTransitPack(CTransitPack transitPack){
+        Command cmd;
+        switch (transitPack.getType()) {
+            case HELP:
+                cmd = new CHelp(transitPack);
+                break;
+            case INFO:
+                cmd = new CInfo(transitPack);
+                break;
+            case SHOW:
+                cmd = new CShow(transitPack);
+                break;
+            case INSERT:
+                cmd = new CInsert(transitPack);
+                //cmd.setElementTaking(true);
+                break;
+            case UPDATE:
+                cmd = new CUpdate(transitPack);
+                //cmd.setElementTaking(true);
+                break;
+            case REMOVE_KEY:
+                cmd = new CRemoveKey(transitPack);
+                break;
+            case CLEAR:
+                cmd = new CClear(transitPack);
+                break;
+            case PING:
+                cmd = new CPing(transitPack);
+                break;
+            case SAVE:
+                cmd = new CSave(transitPack);
+                break;
+            case EXECUTE:
+                cmd = new CScript(transitPack);
+                //cmd.setElementTaking(true);
+                break;
+            case EXIT:
+                cmd = new CExit(transitPack);
+                break;
+            case REMOVE_LOWER:
+                cmd = new CRemoveLower(transitPack);
+                //cmd.setElementTaking(true);
+                break;
+            case REPLACE_IF_LOWER:
+                cmd = new CReplaceIfLower(transitPack);
+                //cmd.setElementTaking(true);
+                break;
+            case REMOVE_LOWER_KEY:
+                cmd = new CRemoveLowerKey(transitPack);
+                break;
+            case MIN_BY_ID:
+                cmd = new CMin(transitPack);
+                break;
+            case FILTER_NUM:
+                cmd = new CFilterByNum(transitPack);
+                break;
+            case FILTER_LESS:
+                cmd = new CFilterLess(transitPack);
+                break;
+            case CONNECT:
+                cmd = new CConnect(transitPack);
+                break;
+            default:
+                System.out.println("got incorrect Transit Pack ");
+                return null;
+        }
+        return cmd;
+    }
 
+    public static void setDualStream(PrintStream st){
+        PrintStream dual = new DualStream(System.out, st);
+        System.setErr(dual);
+        System.setOut(dual);
+    }
+
+    public static void endStream(PrintStream st){
+        st.flush();
+        st.close();
+        System.setErr(System.err);
+        System.setOut(System.out);
+    }
 }

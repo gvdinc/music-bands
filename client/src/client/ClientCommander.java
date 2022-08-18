@@ -1,7 +1,6 @@
 package client;
 
 import common.CTransitPack;
-import common.Command;
 import common.Commands;
 
 import java.util.Locale;
@@ -9,12 +8,12 @@ import java.util.Locale;
 
 public class ClientCommander {
 
-    public Command getCommand(){
+    public CTransitPack getCommand(){
         String commandLine = KeyboardReader.input("input your command: ");
         String[] input = commandLine != null ? commandLine.split(" ",2) : null;
         if (input == null || input.length == 0) return null;
         Commands type = findType(input[0]);
-        Command cmd = null;
+        CTransitPack cmd = null;
         if (input.length > 1 && type != null) {
             cmd = new CTransitPack(type, input[1]);
         }
@@ -23,6 +22,10 @@ public class ClientCommander {
         }
         return cmd;
     }
+
+    public void interactMessage(String message){
+        System.out.println(message);
+    };
 
     private Commands findType(String s) {
         switch (s.toLowerCase(Locale.ROOT)){

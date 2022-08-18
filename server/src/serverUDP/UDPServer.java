@@ -1,6 +1,6 @@
 package serverUDP;
 
-import common.Command;
+import commands.Command;
 import common.Commands;
 import main.CollectionHolder;
 import main.CommandExecutor;
@@ -9,21 +9,16 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
 
 public class UDPServer implements Runnable {
     private final CollectionHolder cHolder;
     private final Connector connector;
-    private final Preparator preparator;
     private ServerState serverState = ServerState.OFFLINE;
     private Command receivedCmd;
-
-
 
     public UDPServer(int port, CollectionHolder cHolder) throws SocketException {
         this.connector = new Connector(port);
         this.cHolder = cHolder;
-        this.preparator = new Preparator();
         launchServer();
     }
 
@@ -43,8 +38,7 @@ public class UDPServer implements Runnable {
     @Override
     public void run() {
         CommandExecutor executor = new CommandExecutor(this.cHolder);
-
-    while (this.serverState != ServerState.OFFLINE) {
+        while (this.serverState != ServerState.OFFLINE) {
             switch (this.serverState) {
 
                 case OPERATING: {
@@ -72,11 +66,12 @@ public class UDPServer implements Runnable {
                         default:
                         {
                             try {
-                                executor.runCommand(receivedCmd, preparator);
+                                executor.runCommand(receivedCmd);
                             } catch (FileNotFoundException e) {
                                 e.printStackTrace();
-                                connector.sendMessage("FAILED");
+                                connector.sendMessage("/FAILED");
                             }
+                            connector.sendMessage(Preparator.readFromFile());
                         }
                     }
                     continue;
@@ -92,7 +87,8 @@ public class UDPServer implements Runnable {
                         break;
                     }
                     if (this.connector.isConnected()) {
-                        this.serverState = ServerState.RECEIVING;
+                        this.serverState = ServerState.OPERATING;
+                        connector.sendMessage(getServerState().toString() + " " + this.connector.getClient().getSenderAddress());
                     }
                     continue;
                 }
@@ -109,10 +105,6 @@ public class UDPServer implements Runnable {
         System.out.println("Disconnecting client " + (this.connector.getClient() != null ? this.connector.getClient().getSenderAddress() : "NO CLIENT"));
         this.connector.disconnect();
         this.serverState = ServerState.UNCONNECTED;
-    }
-
-    public void setServerState(ServerState serverState) {
-        this.serverState = serverState;
     }
 
     private static String encode(byte[] buffer) {

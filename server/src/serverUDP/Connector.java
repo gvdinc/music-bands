@@ -1,14 +1,17 @@
 package serverUDP;
 
-import common.Command;
+import commands.Command;
+import common.CTransitPack;
 import common.Commands;
 import common.Serializer;
+import main.CommandExecutor;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.util.Arrays;
 import java.util.Date;
 
 // 57
@@ -20,7 +23,7 @@ public class Connector {
     private Date lastConnectionTime;
     private Date lastReceivedTime;
 
-    private final int awaitingTime = 20000;
+    private static final int awaitingTime = 200000;
 
     public Connector(int serverPort) throws SocketException {
         this.serverPort = serverPort;
@@ -39,53 +42,11 @@ public class Connector {
         DatagramPacket packet = receivePacket();
         if (packet == null){System.out.println("no connection request"); return false;}
         Command cmdConnect = getCommand(packet);
+        System.out.println("received cmd: " + cmdConnect.getType() + cmdConnect);
         if (cmdConnect.getType() != Commands.CONNECT){System.out.println("incorrect connection request"); return false;}
         resetClientInfo(packet.getAddress(), packet.getPort());
         this.datagramSocket.connect(client.getSenderAddress(), client.getSenderPort());
         return true;
-    }
-
-    @Deprecated
-    private void oldMeetClient(int bufferLength) {
-        try {
-
-      /* Буферы для хранения отправляемых и получаемых данных.
-Они временно хранят данные в случае задержек связи */
-            byte[] sendingDataBuffer = new byte[bufferLength];
-
-            /* Создайте экземпляр UDP-пакета для хранения клиентских данных с использованием буфера для полученных данных */
-            System.out.println("Waiting for a client to connect...");
-
-            // Получите данные от клиента и сохраните их в inputPacket
-            DatagramPacket inputPacket = receivePacket();
-
-            // Выведите на экран отправленные клиентом данные
-            String receivedData = new String(inputPacket.getData());
-            System.out.println("Sent from the client: " + receivedData.trim());
-
-            /*
-             * Преобразуйте отправленные клиентом данные в верхний регистр,
-             * Преобразуйте их в байты
-             * и сохраните в соответствующий буфер. */
-            sendingDataBuffer = receivedData.toUpperCase().getBytes();
-
-            // Получите IP-адрес и порт клиента
-            InetAddress senderAddress = inputPacket.getAddress();
-            int senderPort = inputPacket.getPort();
-            this.client = new ClientData(senderAddress, senderPort);
-
-            // Создайте новый UDP-пакет с данными, чтобы отправить их клиенту
-            DatagramPacket outputPacket = new DatagramPacket(
-                    sendingDataBuffer, sendingDataBuffer.length,
-                    senderAddress, senderPort
-            );
-
-            // Отправьте пакет клиенту
-            datagramSocket.send(outputPacket);
-            System.out.println("client connected: " + this.client.toString());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     // various command getters (with receiving and without)
@@ -94,7 +55,7 @@ public class Connector {
         DatagramPacket inputPacket = this.receivePacket(); // this one throws exception
         // check if Packet is empty
         if (inputPacket == null) return null;
-        cmd = (Command) Serializer.deserialize(inputPacket.getData());
+        cmd = getCommand(inputPacket);
         if (cmd == null || cmd.getType() == null) return null;
         else {
             System.out.println("Sent from the client: " + cmd.getType().getCommandName() + " " + cmd.getParam());
@@ -106,10 +67,11 @@ public class Connector {
         Command cmd;
         // check if Packet is empty
         if (inputPacket == null) return null;
-        cmd = (Command) Serializer.deserialize(inputPacket.getData());
-        if (cmd == null || cmd.getType() == null) return null;
+        CTransitPack transitPack = (CTransitPack) Serializer.deserialize(inputPacket.getData());
+        if (transitPack == null || transitPack.getType() == null) return null;
         else {
-            System.out.println("Sent from the client: " + cmd.getType().getCommandName() + " " + cmd.getParam());
+            cmd = CommandExecutor.unpackTransitPack(transitPack);
+            if (cmd != null) System.out.println("Sent from the client: " + cmd.getType().getCommandName() + " " + cmd.getParam());
             return cmd;
         }
     }
@@ -148,6 +110,7 @@ public class Connector {
         }
 
         this.datagramSocket.receive(inputPacket);
+        System.out.println(Arrays.toString(inputPacket.getData()));
         if (inputPacket.getData().length == 0) return null;
         this.lastReceivedTime = new Date();
         return inputPacket;

@@ -1,10 +1,10 @@
 package commands.input;
 
 
-import common.Command;
+import commands.Command;
+import common.CTransitPack;
 import common.Commands;
 import main.CollectionHolder;
-import main.CommandExecutor;
 import main.Tools;
 
 /**
@@ -16,9 +16,13 @@ public class CInsert extends Command {
         super(type, param);
     }
 
+    public CInsert(CTransitPack transitPack) {
+        super(transitPack);
+    }
+
 
     @Override
-    public void execute(CollectionHolder cHolder) {
+    public boolean execute(CollectionHolder cHolder) {
         System.out.println(this.getParam());
         if (Tools.regSearch(this.getParam(), "\\D")) {
             System.out.println("!wrong id!");
@@ -38,9 +42,10 @@ public class CInsert extends Command {
             this.getReceivedBand().setId(id);
             cHolder.addNewGroup(this.getReceivedBand());
             System.out.println("finished");
-            return;
+            return true;
         }
         System.out.println("Impossible to add");
+        return false;
     }
 
 }

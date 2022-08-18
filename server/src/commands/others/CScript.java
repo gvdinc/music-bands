@@ -1,6 +1,7 @@
 package commands.others;
 
-import common.Command;
+import commands.Command;
+import common.CTransitPack;
 import common.Commands;
 import main.CollectionHolder;
 import main.CommandExecutor;
@@ -20,8 +21,12 @@ public class CScript extends Command {
         super(type, param);
     }
 
+    public CScript(CTransitPack transitPack) {
+        super(transitPack);
+    }
+
     @Override
-    public void execute(CollectionHolder cHolder) {
+    public boolean execute(CollectionHolder cHolder) {
         CommandExecutor commandExecutor = new CommandExecutor(cHolder);
         if (!this.getParam().isEmpty()) {
             String commandsLine = "";
@@ -30,7 +35,7 @@ public class CScript extends Command {
                 buffer = Tools.getInputStream(this.getParam());
             } catch (IOException e) {
                 e.printStackTrace();
-                return;
+                return false;
             }
             if (buffer != null) {
                 while (true) {
@@ -45,7 +50,7 @@ public class CScript extends Command {
                     } catch (IOException e) {
                         System.out.println("unexpected error");
                         e.printStackTrace();
-                        return;
+                        return false;
                     }
                     commandsLine += currentSymbol;
                 }
@@ -57,8 +62,10 @@ public class CScript extends Command {
                 commandExecutor.runCommand(commands[i]);
             }
             System.out.println("ScriptExecutor: execution completed");
+            return true;
         } else {
             System.out.println("you forgot to give the pass-link");
+            return false;
         }
     }
 

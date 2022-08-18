@@ -6,23 +6,13 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 public class Preparator {
-    private String message;
 
-    public Preparator() {
-        this.message = "";
+    public static String addLine(String line) {
+        return "\n" + line;
     }
 
-    public void addLine(String line) {
-        this.message += "\n" + line;
-    }
-
-    public String flush() {
-        String mess = this.message;
-        this.message = "";
-        return mess;
-    }
-
-    public void readFromFile() {
+    public static String readFromFile() {
+        String message = "";
         try (FileReader reader = new FileReader("output.txt")) {
             // читаем посимвольно
             StringBuilder line = new StringBuilder();
@@ -30,9 +20,8 @@ public class Preparator {
             while ((c = reader.read()) != -1) {
                 line.append((char) c);
             }
-            addLine(line.toString());
+            message += addLine(line.toString());
         } catch (IOException ex) {
-
             System.out.println(ex.getMessage());
         }
         PrintWriter writer = null;
@@ -41,8 +30,10 @@ public class Preparator {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        writer.print("");
-// other operations
-        writer.close();
+        if (writer != null) {
+            writer.print("");
+            writer.close();
+        }
+        return message;
     }
 }
