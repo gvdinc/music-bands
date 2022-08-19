@@ -37,7 +37,7 @@ public class CUpdate extends Command {
                 return false;
             }
 
-            if (!(id > cHolder.getMapLength())) {
+            if (id > cHolder.getMapLength()) {
                 System.out.println("!!!wrong id!!!");
                 return false;
             }

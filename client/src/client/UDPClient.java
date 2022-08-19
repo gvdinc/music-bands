@@ -1,6 +1,7 @@
 package client;
 
 import common.CTransitPack;
+import common.Commands;
 
 import java.io.IOException;
 import java.net.Inet4Address;
@@ -22,7 +23,7 @@ public class UDPClient implements Runnable {
 
     @Override
     public void run(){
-        RUN:while (connector.getClientState() != ClientState.OFFLINE) { // TODO: printed double server message (show)
+        RUN:while (connector.getClientState() != ClientState.OFFLINE) {
             switch (connector.getClientState()){
 
                 case UNCONNECTED:{
@@ -42,7 +43,7 @@ public class UDPClient implements Runnable {
                     if (transitPack == null) continue ;
                     connector.flushMessages(); // cleaning the cast
                     connector.sendCommand(transitPack);
-                    if (transitPack.getExitStatus()) {connector.disconnect(); break RUN;}
+                    if (transitPack.getType() == Commands.EXIT) {connector.disconnect(); break RUN;}
                     String message = connector.getMessageAttempt();
                     if (message != null) commander.interactMessage(message);
                     else {connector.disconnect(); connector.flushMessages(); continue; }

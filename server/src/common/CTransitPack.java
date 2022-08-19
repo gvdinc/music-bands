@@ -27,10 +27,6 @@ public class CTransitPack implements Serializable {
         System.out.println("Command: Element initialised");
     }
 
-    public boolean getExitStatus() {
-        return false;
-    }
-
     public Commands getType() {
         return type;
     }

@@ -96,7 +96,7 @@ public class Connector {
             channel.receive(respBuffer);
             //System.out.println("got message");
             String res = readByteBuffer(respBuffer);
-            System.out.println("received message: " + (res.length() <= 0 ? "NONE" : res));
+            //System.out.println("received message: " + (res.length() <= 0 ? "NONE" : res));
             return res.length() > 0 ? res.trim() : null;}
         catch (RuntimeException r){
             return null;
@@ -117,7 +117,6 @@ public class Connector {
     public void flushMessages(){
         String res = "easter egg";
         while (res != null) {
-            System.out.print("FLUSHED: ");
             try {
                 res = getMessage();
             } catch (IOException e) {
@@ -127,7 +126,7 @@ public class Connector {
     }
 
     public String getMessageAttempt(int delay, int amountOfRequests){
-        for (int i = 0; i < 3; i++){
+        for (int i = 0; i < amountOfRequests; i++){
             await(10);
             String message = null;
             try {
@@ -141,8 +140,7 @@ public class Connector {
             }
             else {
                 System.out.println("attempt " + (i+1) + " of " + amountOfRequests + " Failed") ;
-                if (i < amountOfRequests - 1) await(connectionDelay);
-                await(delay);
+                if (i < amountOfRequests - 1) await(delay);
             }
         }
         return null;
