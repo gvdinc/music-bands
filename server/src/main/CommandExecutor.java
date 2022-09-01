@@ -7,14 +7,11 @@ import commands.input.CSave;
 import commands.input.CUpdate;
 import commands.others.*;
 import commands.output.*;
-import commands.server.CConnect;
 import commands.server.CPing;
 import common.CTransitPack;
 import common.Commands;
 import serverUDP.DualStream;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.Locale;
 
@@ -25,17 +22,15 @@ import java.util.Locale;
  *
  * @author Grebenkin Vadim
  */
-public class CommandExecutor {
+public class CommandExecutor{
     /**
      * Stops the cycle of keyboardReader-database cooperating when true
      */
     private boolean exitStatus = false;
-
     /**
      * an object of database to operate with
      */
     private final CollectionHolder cHolder;
-
 
     /**
      * Constructor
@@ -47,7 +42,6 @@ public class CommandExecutor {
         // ! will it be a copy?
     }
 
-
     /**
      * Getter for current exitStatus
      *
@@ -56,39 +50,6 @@ public class CommandExecutor {
     public boolean getExitStatus() {
         return this.exitStatus;
     }
-
-
-//    public void runCommand(commands.Command cmmd) {
-//        String input = cmmd.getType().getCommandName() + " " + cmmd.getArgs();
-//        String[] inputs = input.trim().split(" ", 2);
-//        Command cmd = this.initializeCommand(inputs[0]);
-//        try {
-//            if (!cmd.getType().isElementTaking()) {
-//                this.exitStatus = cmd.getExitStatus();
-//                if (this.exitStatus) return;
-//                if (inputs.length >= 2) {
-//                    cmd.execute(inputs[1]);
-//                } else {
-//                    cmd.execute(" ");
-//                }
-//            } else {
-//                if (inputs.length > 1) {
-//                    cmd.cascadeRun(this, inputs[1]);
-//                } else {
-//                    try {
-//                        cmd.cascadeRun(this, "");
-//                    } catch (IOException e) {
-//                        System.out.println("got incorrect command (" + inputs[0] + "). \nno additional parameters ");
-//                        //e.printStackTrace();
-//                    }
-//
-//                }
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            System.out.println("I have failed you, my lord.");
-//        }
-//    }
 
     /**
      * Executes command (without -input request)
@@ -109,19 +70,7 @@ public class CommandExecutor {
         }
     }
 
-    /**
-     * Executes command {@link #runCommand(String)} (but with input request)
-     *
-     * @param cmd
-     */
-    public void runCommand(Command cmd) throws FileNotFoundException {
-        PrintStream st = new PrintStream(new FileOutputStream("output.txt"));
-        setDualStream(st);
-        boolean res = cmd.execute(this.cHolder);
-        if (!res) { System.out.println("/FAILED"); }
-        endStream(st);
-    }
-
+    @Deprecated
     /**
      * Analyse the current command and creates its object
      *
@@ -145,11 +94,9 @@ public class CommandExecutor {
                 break;
             case "insert":
                 cmd = new CInsert(Commands.INSERT, param);
-                //cmd.setElementTaking(true);
                 break;
             case "update":
                 cmd = new CUpdate(Commands.UPDATE, param);
-                //cmd.setElementTaking(true);
                 break;
             case "remove_key":
                 cmd = new CRemoveKey(Commands.REMOVE_KEY, param);
@@ -162,18 +109,15 @@ public class CommandExecutor {
                 break;
             case "execute_script":
                 cmd = new CScript(Commands.EXECUTE, param);
-                //cmd.setElementTaking(true);
                 break;
             case "exit":
                 cmd = new CExit(Commands.EXIT, param);
                 break;
             case "remove_lower":
                 cmd = new CRemoveLower(Commands.REMOVE_LOWER, param);
-                //cmd.setElementTaking(true);
                 break;
             case "replace_if_lowe":
                 cmd = new CReplaceIfLower(Commands.REPLACE_IF_LOWER, param);
-                //cmd.setElementTaking(true);
                 break;
             case "remove_lower_key":
                 cmd = new CRemoveLowerKey(Commands.REMOVE_LOWER_KEY, param);
@@ -194,7 +138,8 @@ public class CommandExecutor {
         return cmd;
     }
 
-    public static Command unpackTransitPack(CTransitPack transitPack){
+
+    public static Command unpackTransitPack(CTransitPack transitPack) {
         Command cmd;
         switch (transitPack.getType()) {
             case HELP:
@@ -208,11 +153,9 @@ public class CommandExecutor {
                 break;
             case INSERT:
                 cmd = new CInsert(transitPack);
-                //cmd.setElementTaking(true);
                 break;
             case UPDATE:
                 cmd = new CUpdate(transitPack);
-                //cmd.setElementTaking(true);
                 break;
             case REMOVE_KEY:
                 cmd = new CRemoveKey(transitPack);
@@ -228,18 +171,15 @@ public class CommandExecutor {
                 break;
             case EXECUTE:
                 cmd = new CScript(transitPack);
-                //cmd.setElementTaking(true);
                 break;
             case EXIT:
                 cmd = new CExit(transitPack);
                 break;
             case REMOVE_LOWER:
                 cmd = new CRemoveLower(transitPack);
-                //cmd.setElementTaking(true);
                 break;
             case REPLACE_IF_LOWER:
                 cmd = new CReplaceIfLower(transitPack);
-                //cmd.setElementTaking(true);
                 break;
             case REMOVE_LOWER_KEY:
                 cmd = new CRemoveLowerKey(transitPack);
@@ -253,9 +193,6 @@ public class CommandExecutor {
             case FILTER_LESS:
                 cmd = new CFilterLess(transitPack);
                 break;
-            case CONNECT:
-                cmd = new CConnect(transitPack);
-                break;
             default:
                 System.out.println("got incorrect Transit Pack ");
                 return null;
@@ -263,13 +200,13 @@ public class CommandExecutor {
         return cmd;
     }
 
-    public static void setDualStream(PrintStream st){
+    public static void setDualStream(PrintStream st) {
         PrintStream dual = new DualStream(System.out, st);
         System.setErr(dual);
         System.setOut(dual);
     }
 
-    public static void endStream(PrintStream st){
+    public static void endStream(PrintStream st) {
         st.flush();
         st.close();
         System.setErr(System.err);

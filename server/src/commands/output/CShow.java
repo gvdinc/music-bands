@@ -3,6 +3,7 @@ package commands.output;
 import commands.Command;
 import common.CTransitPack;
 import common.Commands;
+import common.ReplyPack;
 import main.CollectionHolder;
 
 /**
@@ -18,9 +19,8 @@ public class CShow extends Command {
         super(transitPack);
     }
 
-    public boolean execute(CollectionHolder cHolder) {
-        cHolder.readMap();
-        return true;
+    public ReplyPack execute(CollectionHolder cHolder) {
+        return new ReplyPack(Commands.SHOW, true, cHolder.getMap());
     }
 
 }

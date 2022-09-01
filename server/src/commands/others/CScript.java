@@ -3,6 +3,7 @@ package commands.others;
 import commands.Command;
 import common.CTransitPack;
 import common.Commands;
+import common.ReplyPack;
 import main.CollectionHolder;
 import main.CommandExecutor;
 import main.Tools;
@@ -14,6 +15,7 @@ import java.io.IOException;
  * Считать и исполнить скрипт из указанного файла.
  * В скрипте содержатся команды в таком же виде, в котором их вводит пользователь в интерактивном режиме.
  */
+@Deprecated
 public class CScript extends Command {
 
 
@@ -26,7 +28,7 @@ public class CScript extends Command {
     }
 
     @Override
-    public boolean execute(CollectionHolder cHolder) {
+    public ReplyPack execute(CollectionHolder cHolder) {
         CommandExecutor commandExecutor = new CommandExecutor(cHolder);
         if (!this.getParam().isEmpty()) {
             String commandsLine = "";
@@ -35,7 +37,7 @@ public class CScript extends Command {
                 buffer = Tools.getInputStream(this.getParam());
             } catch (IOException e) {
                 e.printStackTrace();
-                return false;
+                return new ReplyPack(Commands.EXECUTE, false);
             }
             if (buffer != null) {
                 while (true) {
@@ -50,7 +52,7 @@ public class CScript extends Command {
                     } catch (IOException e) {
                         System.out.println("unexpected error");
                         e.printStackTrace();
-                        return false;
+                        return new ReplyPack(Commands.EXECUTE, false);
                     }
                     commandsLine += currentSymbol;
                 }
@@ -62,10 +64,10 @@ public class CScript extends Command {
                 commandExecutor.runCommand(commands[i]);
             }
             System.out.println("ScriptExecutor: execution completed");
-            return true;
+            return new ReplyPack(Commands.EXECUTE, true);
         } else {
             System.out.println("you forgot to give the pass-link");
-            return false;
+            return new ReplyPack(Commands.EXECUTE, false);
         }
     }
 

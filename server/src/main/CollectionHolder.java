@@ -4,10 +4,14 @@ import collections.Album;
 import collections.Coordinates;
 import collections.MusicBand;
 import collections.StringXMLItem;
+import database.Operator;
 import main.Comparators.ComparatorID;
 
 import java.io.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Stream;
 
 /**
@@ -21,11 +25,17 @@ public class CollectionHolder {
      * pass-link to the loading xml file
      */
     private String dataPath;
+
     private int mapLength = 0;
+
+    public Map<Integer, MusicBand> getMap() {
+        return map;
+    }
+
     /**
      * map is a {@link HashMap} that stores all the music groups data
      */
-    private Map<Integer, MusicBand> map = new HashMap<>();
+    private volatile Map<Integer, MusicBand> map = new HashMap<>();
     /**
      * input stream from the client
      */
@@ -39,178 +49,30 @@ public class CollectionHolder {
      */
     private Date creationDate;
 
+    // new objects
+    private final Operator operator;
+
+
 
     /**
      * Constructor. Automatically sort object after creation
-     *
-     * @param pass - a pass-link to the xml file with data
+     * @param operator
      */
-    public CollectionHolder(String pass) {
-        this.dataPath = pass;
+    public CollectionHolder(Operator operator) {
+        this.operator = operator;
+        this.loadData();
+    }
+
+    /**
+     * loads data from database
+     */
+    public void loadData() {
         try {
-            this.loadData();
-        } catch (IOException e) {
+            this.map = operator.getData();
+        } catch (SQLException e) {
             e.printStackTrace();
+            System.out.println("can not load the data!");
         }
-        this.sort(HolderSortTypes.DEFAULT);
-    }
-
-
-    /**
-     * Procedure sorts exising array (mass)
-     *
-     * @param type - (enum) sorting attribute
-     */
-    public void sort(HolderSortTypes type) {
-        if (type == HolderSortTypes.DEFAULT) { // сортировка по id
-            this.mass = new int[this.mapLength];
-            int i = 0;
-            for (Map.Entry<Integer, MusicBand> entry : this.map.entrySet()) {
-                if (i < mass.length) {
-                    mass[i] = entry.getKey();
-                    i++;
-                }
-            }
-        } else if (type == HolderSortTypes.NumberOfParticipants) {
-            for (int i = 0; i + 1 < mass.length; ++i) {
-                for (int j = 0; j + 1 < mass.length - i; ++j) {
-                    if (this.map.get(mass[j + 1]).getNumberOfParticipants() < this.map.get(mass[j]).getNumberOfParticipants()) {
-                        int tmp = mass[j];
-                        mass[j] = mass[j + 1];
-                        mass[j + 1] = tmp;
-                    }
-                }
-            }
-        }
-    }
-
-    public void ssort(HolderSortTypes type) { // Stream CommandExecutor
-        Stream<Map.Entry<Integer, MusicBand>> streamOfBands = this.map.entrySet().stream().sorted();
-
-        switch (type) {
-            case DEFAULT:
-                System.out.println(streamOfBands.sorted());
-
-//            case NumberOfParticipants:
-//                System.out.println(streamOfBands.sorted());
-
-        } // choosing sorting mode
-    }
-
-
-    /**
-     * exports existing Map into file result.xlm
-     */
-    public void exportXML(/*String pass*/) {
-        System.out.println("\nexporting xml...");
-        try (FileWriter writer = new FileWriter("result.xml")) {
-            writer.write(this.toXML());
-            writer.flush();
-            System.out.println("successfully exported\n");
-        } catch (IOException e) {
-            System.out.println("export failed");
-        }
-    }
-
-    /**
-     * converts storing map into xml code (String)
-     *
-     * @return String line with xml coded map
-     */
-    private String toXML() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("<?xml version=\"1.0\"?>\n");
-        builder.append("<MusicBands>\n");
-        for (int bandID : this.mass) {
-            builder.append(this.map.get(bandID).toXMLCode());
-        }
-        builder.append("</MusicBands>\n");
-        return builder.toString();
-    }
-
-    /**
-     * loads data from xml file
-     *
-     * @throws IOException
-     */
-    void loadData() throws IOException {
-        this.inStream = this.getInputer();
-        if (this.inStream != null) {
-            this.parse();
-            this.creationDate = new Date();
-        }
-    }
-
-    /**
-     * parsing xml data from file
-     * as a result fills the map with new data
-     *
-     * @throws IOException
-     */
-    private void parse() throws IOException { //преобразует файл в Map
-        String line = "";
-        this.map = new HashMap<>();
-        while (inStream.available() > 0) {
-            char currentSymbol = (char) this.inStream.read();
-            line += currentSymbol;
-        }
-        // получаем Строку с файлом
-
-
-        StringXMLItem[] groups = Tools.regSearch(line);
-        groups = Tools.regSearch(groups[0].getContent()); // уровень муз-групп
-
-        StringXMLItem[][] params = new StringXMLItem[groups.length][0];
-        for (int i = 0; i != groups.length; i++) {
-            params[i] = Tools.regSearch(groups[i].getContent());
-        } // уровень параметров
-
-        MusicBand tmpBand;
-        for (int i = 0; i != groups.length; i++) {
-            tmpBand = new MusicBand();
-            tmpBand.setName(groups[i].getName());
-            tmpBand.setId(i + 1);
-            for (int p = 0; p != params[i].length; p++) {
-                String teg = params[i][p].getName();
-                String param = params[i][p].getContent();
-                try {
-                    switch (teg) {
-                        case ("numberOfParticipants"):
-                            tmpBand.setNumberOfParticipants(new Long(param));
-                            break;
-                        case ("singlesCount"):
-                            tmpBand.setSinglesCount(new Long(param));
-                            break;
-                        case ("establishmentDate"):
-                            tmpBand.setEstablishmentDate(param);
-                            break;
-                        case ("genre"):
-                            tmpBand.setGenre(param);
-                            break;
-                        case ("coordinates"):
-                            Coordinates cord = new Coordinates();
-                            cord.setFromXML(param);
-                            tmpBand.setCoordinates(cord);
-                            break;
-                        case ("bestAlbum"):
-                            Album album = new Album();
-                            album.setFromXML(param);
-                            tmpBand.setBestAlbum(album);
-                            break;
-                    }
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (tmpBand.isCorrect()) {
-                this.map.put(tmpBand.getId(), tmpBand);
-                this.mapLength++;
-                System.out.println("Successfully added " + tmpBand.getId() + " (" + tmpBand.getName() + ")" + '\n');
-            }
-        }
-        //создаём объекты муз-групп
-
-
     }
 
     /**
@@ -228,79 +90,25 @@ public class CollectionHolder {
     }
 
     /**
-     * prints the current {@link #map} element into user's console
-     *
-     * @param bandID - the id of the printing element
-     */
-    public void readMapElement(int bandID) {
-        if (this.map.get(bandID) != null)
-            System.out.println(bandID + ". " + this.map.get(bandID).toString());
-        else System.out.println("no element");
-    }
-
-    /**
      * Prints the information about {@link #map}
      */
-    public void mapInfo() {
-        System.out.print('\n');
-        System.out.println("app.collections in storage " + "(" + this.mass.length + ")");
-        System.out.println("creation date, time: " + this.creationDate);
-        System.out.println("type of collection: " + this.map.getClass().getName());
-        System.out.println("xml file pass: " + this.dataPath);
-        System.out.print('\n');
-    }
-
-    /**
-     * function gets the client's input stream
-     *
-     * @return client's input stream {@link Scanner}
-     * @throws IOException
-     */
-    public BufferedInputStream getInputer() throws IOException {
-        File file = new File(this.dataPath);
-        InputStream is = null;
-        try {
-            is = new FileInputStream(file);
-        } catch (FileNotFoundException e) {
-            System.out.println("Error: xml file not found! (" + this.dataPath + ")");
-            return null;
-        }
-        BufferedInputStream inputStream = new BufferedInputStream(is);
-        if (inputStream.available() > 0) {
-            System.out.println("Holder: file found");
-        } else {
-            System.out.println("Holder: file not found");
-        }
-        return inputStream;
-    }
-
-
-    /**
-     * Checks if the client stream initialised
-     *
-     * @return returns "true" if client's input stream initialised
-     */
-    public boolean checkInputStream() {
-        return this.inStream != null;
-    }
-
-
-    /**
-     * Sets the pass-link to the xml file to the new one
-     *
-     * @param line - new pass-link to the xml file
-     */
-    public void setPass(String line) {
-        this.dataPath = line;
+    public String mapInfo() {
+        String message = "";
+        message += ('\n');
+        message += ("app.collections in storage " + "(" + this.mass.length + ")");
+        message += ("creation date, time: " + this.creationDate);
+        message += ("type of collection: " + this.map.getClass().getName());
+        message += ('\n');
+        return message;
     }
 
     /**
      * deletes all the storing MusicBands in {@link #map}
      */
-    public void clearMap() {
-        this.map.clear();
-        mass = new int[0];
-        System.out.println("Holder: Collection cleared");
+    public synchronized void clearMap(String username) {
+        operator.clearMap(username);
+        loadData();
+        System.out.println("Holder: "+username+"'s Collections cleared");
     }
 
     /**
@@ -308,9 +116,9 @@ public class CollectionHolder {
      *
      * @param newBand - new {@link MusicBand} to be added
      */
-    public void addNewGroup(MusicBand newBand) {
-        this.mass = Tools.appendInt(this.mass, newBand.getId());
-        this.map.put(newBand.getId(), newBand);
+    public synchronized void addNewGroup(MusicBand newBand) {
+        this.operator.appendBand(newBand);
+        loadData();
         System.out.println("Holder: successfully added");
     }
 
@@ -435,6 +243,4 @@ public class CollectionHolder {
     public Stream<MusicBand> getMapStream() {
         return this.map.values().stream();
     }
-
-
 }

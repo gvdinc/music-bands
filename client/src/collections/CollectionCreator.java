@@ -1,12 +1,15 @@
 package collections;
 
+
+
 import client.KeyboardReader;
+import common.User;
 
 import java.util.Locale;
 import java.util.Objects;
 
 public class CollectionCreator {
-    public static MusicBand getClientBand() {
+    public static MusicBand getClientBand(User user) {
         MusicBand newBand = new MusicBand();
 
         while (!(newBand.isCorrect())) {
@@ -27,13 +30,13 @@ public class CollectionCreator {
                 newBand.setBestAlbum(album);
             }
 
-
             // setting number of participants
             Long numberOfParts = getNumberOfParticipants();
             if (numberOfParts != null) {
                 newBand.setNumberOfParticipants(numberOfParts);
             }
             // created
+            newBand.setUser(user);
         }
 
         return newBand;

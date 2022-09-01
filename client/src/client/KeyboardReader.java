@@ -22,6 +22,16 @@ public class KeyboardReader {
         return input();
     }
 
+    public static String inputNotNull(String message){
+        System.out.println(message);
+        String str = input();
+        while(str == null){
+            System.out.println("cannot be null. Repeat input.");
+            str = input();
+        }
+        return str;
+    }
+
     /**
      * Gets inputted line from console
      *

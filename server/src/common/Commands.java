@@ -23,8 +23,8 @@ public enum Commands {
     FILTER_LESS("filter_less_than_number_of_participans", false),
     PING("ping", false),
     SAVE("save", false),
-    CONNECT("connect", false); // special command to connect the server
-
+    AUTHORIZE("authorize", false),
+    REGISTER("register", false);
     /**
      * commandName - название команды в системе
      * isHasArgs - логическая переменная, которая характеризует команду на наличие аругментов

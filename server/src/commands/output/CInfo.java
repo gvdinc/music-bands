@@ -3,6 +3,7 @@ package commands.output;
 import commands.Command;
 import common.CTransitPack;
 import common.Commands;
+import common.ReplyPack;
 import main.CollectionHolder;
 
 /**
@@ -20,9 +21,8 @@ public class CInfo extends Command {
     }
 
     @Override
-    public boolean execute(CollectionHolder cHolder) {
-        cHolder.mapInfo();
-        return true;
+    public ReplyPack execute(CollectionHolder cHolder) {
+        return new ReplyPack(Commands.INFO, true, cHolder.mapInfo());
     }
 
 }

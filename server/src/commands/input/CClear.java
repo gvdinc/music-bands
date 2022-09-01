@@ -3,6 +3,7 @@ package commands.input;
 import commands.Command;
 import common.CTransitPack;
 import common.Commands;
+import common.ReplyPack;
 import main.CollectionHolder;
 
 /**
@@ -19,9 +20,9 @@ public class CClear extends Command {
     }
 
     @Override
-    public boolean execute(CollectionHolder cHolder) {
-        cHolder.clearMap();
-        return true;
+    public ReplyPack execute(CollectionHolder cHolder) {
+        cHolder.clearMap(getReceivedBand().getUsername());
+        return new ReplyPack(Commands.CLEAR, true);
     }
 
 }

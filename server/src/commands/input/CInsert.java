@@ -4,6 +4,7 @@ package commands.input;
 import commands.Command;
 import common.CTransitPack;
 import common.Commands;
+import common.ReplyPack;
 import main.CollectionHolder;
 import main.Tools;
 
@@ -22,7 +23,7 @@ public class CInsert extends Command {
 
 
     @Override
-    public boolean execute(CollectionHolder cHolder) {
+    public ReplyPack execute(CollectionHolder cHolder) {
         System.out.println(this.getParam());
         if (Tools.regSearch(this.getParam(), "\\D")) {
             System.out.println("!wrong id!");
@@ -42,10 +43,10 @@ public class CInsert extends Command {
             this.getReceivedBand().setId(id);
             cHolder.addNewGroup(this.getReceivedBand());
             System.out.println("finished");
-            return true;
+            return new ReplyPack(Commands.INSERT, true);
         }
         System.out.println("Impossible to add");
-        return false;
+        return new ReplyPack(Commands.INSERT, false);
     }
 
 }

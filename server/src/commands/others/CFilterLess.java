@@ -4,6 +4,7 @@ import collections.MusicBand;
 import commands.Command;
 import common.CTransitPack;
 import common.Commands;
+import common.ReplyPack;
 import main.CollectionHolder;
 import main.Tools;
 
@@ -23,14 +24,14 @@ public class CFilterLess extends Command {
     }
 
     @Override
-    public boolean execute(CollectionHolder cHolder) {
+    public ReplyPack execute(CollectionHolder cHolder) {
         if (Tools.regSearch(this.getParam(), "\\D")) {
             System.out.println("!!!wrong number of participants!!!");
-            return false;
+            return new ReplyPack(Commands.FILTER_LESS, false);
         }
         Predicate<MusicBand> numberFilter = musicBand -> musicBand.getNumberOfParticipants() != null && musicBand.getNumberOfParticipants() < new Long(this.getParam());
         cHolder.getMapStream().filter(numberFilter).forEach(System.out::println);
-        return true;
+        return new ReplyPack(Commands.FILTER_LESS, true);
     }
 
 }

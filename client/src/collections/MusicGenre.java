@@ -1,12 +1,10 @@
 package collections;
 
 
-import java.io.Serializable;
-
 /**
  * enum with genres for {@link MusicBand}
  */
-public enum MusicGenre implements Serializable {
+public enum MusicGenre {
     ROCK,
     PSYCHEDELIC_ROCK,
     RAP,

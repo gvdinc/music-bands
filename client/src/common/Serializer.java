@@ -36,7 +36,7 @@ public class Serializer {
             return null;
         } catch (IOException | ClassNotFoundException e) {
             System.out.println("Serialization error. Class was not found");
-            e.printStackTrace();
+            //e.printStackTrace();
             //System.exit(0);
             return null;
         }

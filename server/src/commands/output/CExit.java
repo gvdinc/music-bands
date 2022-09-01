@@ -3,6 +3,7 @@ package commands.output;
 import commands.Command;
 import common.CTransitPack;
 import common.Commands;
+import common.ReplyPack;
 import main.CollectionHolder;
 
 /**
@@ -20,8 +21,8 @@ public class CExit extends Command {
     }
 
     @Override
-    public boolean execute(CollectionHolder cHolder) {
-        return true;
+    public ReplyPack execute(CollectionHolder cHolder) {
+        return new ReplyPack(Commands.EXIT, true);
     }
 
     @Override

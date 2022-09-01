@@ -2,6 +2,7 @@ package commands.others;
 
 import commands.Command;
 import common.Commands;
+import common.ReplyPack;
 import main.CollectionHolder;
 
 /**
@@ -15,8 +16,8 @@ public class incorrectC extends Command {
     }
 
     @Override
-    public boolean execute(CollectionHolder cHolder) {
-        return false;
+    public ReplyPack execute(CollectionHolder cHolder) {
+        return new ReplyPack(Commands.PING, false);
     }
 
 }

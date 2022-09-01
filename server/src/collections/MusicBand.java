@@ -1,9 +1,8 @@
 package collections;
 
+import common.User;
+
 import java.io.Serializable;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.Date;
 //name, coordinates, creation, participants, singles, establishment, genre, best Album
 
@@ -39,10 +38,7 @@ public class MusicBand implements Serializable {
      * number of singles of the band
      */
     private Long singlesCount; //Поле может быть null, Значение поля должно быть больше 0
-    /**
-     * establishment date of the band
-     */
-    private LocalDateTime establishmentDate; //Поле может быть null
+    //private LocalDateTime establishmentDate; //Поле может быть null
     /**
      * music genre of the band
      */
@@ -51,12 +47,17 @@ public class MusicBand implements Serializable {
      * best album of band
      */
     private Album bestAlbum; //Поле может быть null
+    private String username;
 
     /**
      * Constructor
      */
     public MusicBand() {
         generateCreationDate();
+    }
+
+    public MusicBand(Date creationDate) {
+        this.creationDate = creationDate;
     }
 
     /**
@@ -102,45 +103,30 @@ public class MusicBand implements Serializable {
         this.creationDate = new Date();
     }
 
-    /**
-     * setter for {@link #establishmentDate}
-     */
-    public void setEstablishmentDate(String data) {
-
-        data = data.replace(" ", "");
-        String[] date = data.split(".");
-        if (date.length > 3) {
-            String[] time = date[3].split(":");
-            if (time.length == 3) {
-                LocalDate estDate = LocalDate.of(new Integer(date[2]), new Integer(date[1]), new Integer(date[0]));
-                LocalTime estTime = LocalTime.of(new Integer(time[2]), new Integer(time[1]), new Integer(date[0]), 0);
-                this.establishmentDate = LocalDateTime.of(estDate, estTime);
-            }
-        }
+    @Override
+    public String toString() {
+        String res = "MB {" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", coordinates=" + coordinates +
+                ", creationDate=" + creationDate +
+                ", numberOfParticipants=" + numberOfParticipants +
+                ", singlesCount=" + singlesCount +
+                ", genre=" + genre +
+                ", bestAlbum=" + bestAlbum +
+                '}';
+        return res;
     }
 
-    @Deprecated
-    private void randomId(int id) {
-        this.id = (int) (Math.random() * 1000000);
-    }
 
-    /**
-     * setter for {@link #bestAlbum}
-     */
     public void setBestAlbum(Album bestAlbum) {
         this.bestAlbum = bestAlbum;
     }
 
-    /**
-     * setter for {@link #singlesCount}
-     */
     public void setSinglesCount(Long singlesCount) {
         this.singlesCount = singlesCount;
     }
 
-    /**
-     * setter for {@link #genre}
-     */
     public void setGenre(String param) {
         if (param.equalsIgnoreCase("ROCK")) {
             this.genre = MusicGenre.ROCK;
@@ -155,102 +141,66 @@ public class MusicBand implements Serializable {
         }
     }
 
-    /**
-     * getter for {@link #name}
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * setter for {@link #name}
-     */
     public void setName(String name) {
         this.name = name;
     }
 
-    /**
-     * getter for {@link #id}
-     */
-    public int getId() {
-        return id;
-    }
-
-    /**
-     * setter for {@link #id}
-     */
     public void setId(int id) {
         this.id = id;
     }
 
-    @Override
-    public String toString() {
-        String res = "MB {" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", coordinates=" + coordinates +
-                ", creationDate=" + creationDate +
-                ", numberOfParticipants=" + numberOfParticipants +
-                ", singlesCount=" + singlesCount +
-                ", establishmentDate=" + establishmentDate +
-                ", genre=" + genre +
-                ", bestAlbum=" + bestAlbum +
-                '}';
-        return res;
+    public void setNumberOfParticipants(Long numberOfParticipants) {
+        this.numberOfParticipants = numberOfParticipants;
     }
 
-    /**
-     * method returns xml version of this music band
-     *
-     * @return String line with xml coded {@link MusicBand}
-     */
-    public String toXMLCode() {
-        StringBuilder builder = new StringBuilder();
-        if (this.isCorrect()) {
-            // name
-            builder.append("    <" + this.name + ">" + "\n");
-            //params
-
-            builder.append(codeParam("genre", this.genre.toString()));
-            builder.append("        <coordinates>\n"
-                    + "    " + codeParam("x", String.valueOf(this.coordinates.getX()))
-                    + "    " + codeParam("y", String.valueOf(this.coordinates.getY()))
-                    + "        </coordinates>\n"
-            );
-            try {
-                builder.append("        <bestAlbum>\n"
-                        + "    " + codeParam("name", this.bestAlbum.getName())
-                        + "    " + codeParam("sales", String.valueOf(this.bestAlbum.getSales()))
-                        + "        </bestAlbum>\n"
-                );
-            } catch (Exception e) {
-            }
-
-            // additional params
-            if (this.numberOfParticipants != null)
-                builder.append(codeParam("numberOfParticipants", this.numberOfParticipants.toString()));
-            if (this.singlesCount != null)
-                builder.append(codeParam("singlesCount", this.singlesCount.toString()));
-
-            builder.append("    </" + this.name + ">\n");
-
-        }
-        return builder.toString();
+    public void setCoordinates(Coordinates coordinates) {
+        this.coordinates = coordinates;
     }
 
-    /**
-     * getter for {@link #numberOfParticipants}
-     */
+    public void setUser(User user) {
+        this.username = user.getUsername();
+    }
+
+    public void setUser(String username) {
+        this.username = username;
+    }
+
+
+    public int getId() {
+        return id;
+    }
+    public MusicGenre getGenre() {
+        return genre;
+    }
+
+    public String getName() {
+        return name;
+    }
+
     public Long getNumberOfParticipants() {
         return numberOfParticipants;
     }
 
-    /**
-     * setter for {@link #numberOfParticipants}
-     */
-    public void setNumberOfParticipants(Long numberOfParticipants) {
-        this.numberOfParticipants = numberOfParticipants;
+    public Coordinates getCoordinates() {
+        return coordinates;
     }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public Long getSinglesCount() {
+        return singlesCount;
+    }
+
+    public Album getBestAlbum() {
+        return bestAlbum;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
 
     /**
      * converts parameter into xml code
@@ -260,16 +210,5 @@ public class MusicBand implements Serializable {
             return "        <" + nameOfParam + ">" + Content + "</" + nameOfParam + ">\n";
         else
             return "";
-    }
-
-    public Coordinates getCoordinates() {
-        return coordinates;
-    }
-
-    /**
-     * setter for {@link #coordinates}
-     */
-    public void setCoordinates(Coordinates coordinates) {
-        this.coordinates = coordinates;
     }
 }

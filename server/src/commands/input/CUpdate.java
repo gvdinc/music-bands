@@ -3,6 +3,7 @@ package commands.input;
 import commands.Command;
 import common.CTransitPack;
 import common.Commands;
+import common.ReplyPack;
 import main.CollectionHolder;
 import main.Tools;
 
@@ -21,11 +22,11 @@ public class CUpdate extends Command {
 
 
     @Override
-    public boolean execute(CollectionHolder cHolder) {
+    public ReplyPack execute(CollectionHolder cHolder) {
         System.out.println(this.getParam());
         if (Tools.regSearch(this.getParam(), "\\D")) {
             System.out.println("!!!wrong id!!!");
-            return false;
+            return new ReplyPack(Commands.UPDATE, false);
         }
 
         if (this.getReceivedBand().isCorrect()) {
@@ -34,20 +35,20 @@ public class CUpdate extends Command {
                 id = new Integer(this.getParam());
             } catch (NumberFormatException e) {
                 System.out.println("!!!wrong id!!!");
-                return false;
+                return new ReplyPack(Commands.UPDATE, false);
             }
 
             if (id > cHolder.getMapLength()) {
                 System.out.println("!!!wrong id!!!");
-                return false;
+                return new ReplyPack(Commands.UPDATE, false);
             }
             this.getReceivedBand().setId(id);
             cHolder.addNewGroup(this.getReceivedBand());
             System.out.println("finished");
-            return true;
+            return new ReplyPack(Commands.UPDATE, true);
         }
         System.out.println("Impossible to update");
-        return false;
+        return new ReplyPack(Commands.UPDATE, false);
     }
 
 

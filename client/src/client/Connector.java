@@ -1,14 +1,12 @@
 package client;
 
 import common.CTransitPack;
-import common.Commands;
+import common.ReplyPack;
 import common.Serializer;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.net.Inet4Address;
 import java.net.SocketAddress;
-import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.charset.StandardCharsets;
@@ -19,38 +17,34 @@ public class Connector {
     private ClientState clientState = ClientState.OFFLINE;
     private static final int bufferSize = 2024;
     public static final int connectionDelay = 3000;
-    private static String clientIP = "127.0.0.1";
 
-    /*
-    static {
-        try {
-            clientIP = Inet4Address.getLocalHost().getHostAddress().toString();
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
-    }*/
+    public static String getClientIP() {
+        return clientIP;
+    }
 
-    public Connector(){
+    public static String clientIP = "127.0.0.1";
+
+
+    public Connector(SocketAddress address){
         try {
             channel = initChannel();
         } catch (IOException e) {
             System.out.println("Unable to start the client");
             e.printStackTrace();
-            return;
         }
-
+        this.address = address;
     }
 
     private DatagramChannel initChannel() throws IOException {
         DatagramChannel channel = DatagramChannelBuilder.bindChannel(null);
         channel.configureBlocking(false);
-        this.clientState = ClientState.UNCONNECTED; // without it - can be static
+        this.clientState = ClientState.UNAUTHORIZED; // without it - can be static
         return channel;
     }
     public void disconnect(){
         try {
             channel.disconnect();
-            clientState = ClientState.UNCONNECTED;
+            clientState = ClientState.OFFLINE;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -65,39 +59,21 @@ public class Connector {
         }
     }
 
-    // client - server communicating
-    public boolean connectToServer(SocketAddress address) throws IOException { // TODO: fix the exception
-        if (clientState != ClientState.UNCONNECTED) return false;
-        this.address = address;
-        //this.channel.connect(address);
-        flushMessages();
-        for (int i = 0; i < 3; i++){
-            sendCommand(new CTransitPack(Commands.CONNECT, null));
-            await(60);
-            String message = getMessage();
-            if (message != null && message.equals("OPERATING /"+ clientIP)){
-                System.out.println("successfully connected");
-                clientState = ClientState.CONNECTED;
-                return true;
-            }
-            else {
-                System.out.println("attempt " + (i+1) + " of 3 Failed") ;
-                if (i < 2) await(connectionDelay);
-            }
-        }
-        System.out.println("server offline");
-        //this.closeChannel();
-        return false;
-    }
-
-    private String getMessage()throws IOException {
+    private ReplyPack receivePack()throws IOException {
         ByteBuffer respBuffer = ByteBuffer.allocate(bufferSize);
+        ReplyPack replyPack;
         try{
             channel.receive(respBuffer);
-            //System.out.println("got message");
-            String res = readByteBuffer(respBuffer);
-            //System.out.println("received message: " + (res.length() <= 0 ? "NONE" : res));
-            return res.length() > 0 ? res.trim() : null;}
+            byte[] arr = new byte[2024];
+            respBuffer.rewind();
+            try {
+                respBuffer.get(arr);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            replyPack = (ReplyPack) Serializer.deserialize(arr);
+            return replyPack;
+        }
         catch (RuntimeException r){
             return null;
         }
@@ -115,28 +91,28 @@ public class Connector {
     }
 
     public void flushMessages(){
-        String res = "easter egg";
+        ReplyPack res = new ReplyPack(null, false);
         while (res != null) {
             try {
-                res = getMessage();
+                res = receivePack();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    public String getMessageAttempt(int delay, int amountOfRequests){
+    public ReplyPack getReplyAttempt(int delay, int amountOfRequests){
         for (int i = 0; i < amountOfRequests; i++){
-            await(10);
-            String message = null;
+            await(100);
+            ReplyPack replyPack = null;
             try {
-                message = getMessage();
+                replyPack = receivePack();
             } catch (IOException e) {
                 e.printStackTrace(); return null;
             } // receiving
 
-            if (message != null && message.length() > 0){
-                return message;
+            if (replyPack != null){
+                return replyPack;
             }
             else {
                 System.out.println("attempt " + (i+1) + " of " + amountOfRequests + " Failed") ;
@@ -145,11 +121,11 @@ public class Connector {
         }
         return null;
     }
-    public String getMessageAttempt(int amountOfRequests){
-        return getMessageAttempt(connectionDelay, amountOfRequests);
+    public ReplyPack getReplyAttempt(int amountOfRequests){
+        return getReplyAttempt(connectionDelay, amountOfRequests);
     }
-    public String getMessageAttempt(){
-        return getMessageAttempt(connectionDelay, 3);
+    public ReplyPack getReplyAttempt(){
+        return getReplyAttempt(connectionDelay, 3);
     }
 
     // statics
@@ -175,4 +151,9 @@ public class Connector {
     public ClientState getClientState() {
         return clientState;
     }
+
+    public void setClientState(ClientState clientState) {
+        this.clientState = clientState;
+    }
+
 }

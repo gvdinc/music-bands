@@ -4,6 +4,7 @@ import collections.MusicBand;
 import commands.Command;
 import common.CTransitPack;
 import common.Commands;
+import common.ReplyPack;
 import main.CollectionHolder;
 
 import java.util.Stack;
@@ -24,7 +25,7 @@ public class CRemoveLower extends Command {
     }
 
     @Override
-    public boolean execute(CollectionHolder cHolder) {
+    public ReplyPack execute(CollectionHolder cHolder) {
         Long numberOfParticipants = this.getReceivedBand().getNumberOfParticipants();
         Stack<Integer> queueToDelete = new Stack<>();
         Predicate<MusicBand> numberFilter = musicBand -> musicBand.getNumberOfParticipants() != null && musicBand.getNumberOfParticipants() < numberOfParticipants;
@@ -32,7 +33,7 @@ public class CRemoveLower extends Command {
             queueToDelete.push(mB.getId());
         });
         queueToDelete.forEach(cHolder::deleteElement);
-        return true;
+        return new ReplyPack(Commands.REMOVE_LOWER, true);
     }
 
 }

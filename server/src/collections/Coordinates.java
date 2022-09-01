@@ -10,6 +10,14 @@ import java.io.Serializable;
  */
 public class Coordinates implements Serializable {
 
+    public Coordinates(float x, Float y){
+        this.x = x;
+        this.y = y;
+    }
+    public Coordinates(){
+        super();
+    }
+
     /**
      * coordinate x
      */

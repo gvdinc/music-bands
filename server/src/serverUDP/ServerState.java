@@ -2,7 +2,6 @@ package serverUDP;
 
 public enum ServerState {
     OPERATING,
-    UNCONNECTED,
     OFFLINE;
 
     @Override

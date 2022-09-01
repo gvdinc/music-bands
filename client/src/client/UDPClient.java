@@ -1,56 +1,76 @@
 package client;
 
+import UI.Display;
 import common.CTransitPack;
 import common.Commands;
+import common.ReplyPack;
+import common.User;
 
-import java.io.IOException;
-import java.net.Inet4Address;
 import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
-
-import static client.Connector.await;
 
 
 public class UDPClient implements Runnable {
 
-    private final int serverPort;
     private final ClientCommander commander = new ClientCommander();
-    private Connector connector = new Connector();
+    private User user;
+    private boolean notRegistered = true;
+    private final Connector connector;
 
     public UDPClient(int serverPort) {
-        this.serverPort = serverPort;
+        this.connector = new Connector(new InetSocketAddress("localhost", serverPort));
     }
 
     @Override
     public void run(){
+
         RUN:while (connector.getClientState() != ClientState.OFFLINE) {
+            connector.flushMessages(); // cleaning the cast
+
             switch (connector.getClientState()){
 
-                case UNCONNECTED:{
-                    boolean res = false;
-                    try {
-                        res = connector.connectToServer(new InetSocketAddress("localhost", serverPort));
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                case UNAUTHORIZED: {
+                    authorise();
+                    CTransitPack authorisationTransitPack = new CTransitPack(notRegistered ? Commands.REGISTER : Commands.AUTHORIZE, null, user);
+                    connector.sendCommand(authorisationTransitPack);
+                    ReplyPack replyPack = connector.getReplyAttempt();
+                    Display.displayPackData(replyPack);
+                    if ((replyPack.getCommandType() == Commands.AUTHORIZE || replyPack.getCommandType() == Commands.REGISTER) && replyPack.isOperationSucceeded()){
+                        this.connector.setClientState(ClientState.AUTHORISED);
                     }
-                    if (!res) await(10000);
-                    connector.flushMessages();
-                    continue RUN;
+                    continue;
                 }
 
-                case CONNECTED: {
-                    CTransitPack transitPack = commander.getCommand();
-                    if (transitPack == null) continue ;
-                    connector.flushMessages(); // cleaning the cast
+                case AUTHORISED: {
+                    CTransitPack transitPack = commander.getCommand(user);
+                    if (transitPack == null) continue;
+                    transitPack.setUser(user);
                     connector.sendCommand(transitPack);
                     if (transitPack.getType() == Commands.EXIT) {connector.disconnect(); break RUN;}
-                    String message = connector.getMessageAttempt();
-                    if (message != null) commander.interactMessage(message);
-                    else {connector.disconnect(); connector.flushMessages(); continue; }
+                    ReplyPack replyPack = connector.getReplyAttempt();
+                    if (replyPack != null) Display.displayPackData(replyPack);
+                    else {connector.disconnect(); connector.flushMessages();
+                    }
+                    continue;
                 }
             }
-            //connector.connect(new InetSocketAddress("localhost", serverPort));
         }
     }
 
+    private void authorise(){
+        boolean notRegistered = KeyboardReader.input("needs registration? Y/N").trim().equalsIgnoreCase("Y");
+        user = notRegistered ? register() : login();
+        this.notRegistered = notRegistered;
+    }
+
+    private static User login(){
+        String name = KeyboardReader.inputNotNull("login: ");
+        String password = KeyboardReader.inputNotNull("password: ");
+        return new User(name, password);
+    }
+
+    private static User register(){
+        String newName = KeyboardReader.inputNotNull("set your login: ");
+        String newPassword = KeyboardReader.inputNotNull("set the password: ");
+        return new User(newName, newPassword);
+    }
 }

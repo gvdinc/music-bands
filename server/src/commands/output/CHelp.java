@@ -3,6 +3,7 @@ package commands.output;
 import commands.Command;
 import common.CTransitPack;
 import common.Commands;
+import common.ReplyPack;
 import main.CollectionHolder;
 
 /**
@@ -19,8 +20,8 @@ public class CHelp extends Command {
         super(transitPack);
     }
 
-    public boolean execute(CollectionHolder cHolder) {
-        System.out.print("help : display help on available server.commands\n" +
+    public ReplyPack execute(CollectionHolder cHolder) {
+        String message = ("help : display help on available server.commands\n" +
                 "info : print information about the collection to standard output (type, initialization date, number of elements, etc.)\n" +
                 "show : print to standard output all elements of the collection in string representation\n" +
                 "insert null {element} : add a new element with the given key\n" +
@@ -36,7 +37,7 @@ public class CHelp extends Command {
                 "min_by_id : display any object from the collection whose id field value is the minimum\n" +
                 "filter_by_number_of_participants numberOfParticipants : display elements whose numberOfParticipants field value is equal to the given one\n" +
                 "filter_less_than_number_of_participants numberOfParticipants : display elements whose numberOfParticipants field value is less than the given value\n\n");
-    return true;
+        return new ReplyPack(Commands.HELP, true, message);
     }
 
 }

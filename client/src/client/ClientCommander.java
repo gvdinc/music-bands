@@ -2,23 +2,24 @@ package client;
 
 import common.CTransitPack;
 import common.Commands;
+import common.User;
 
 import java.util.Locale;
 
 
 public class ClientCommander {
 
-    public CTransitPack getCommand(){
+    public static CTransitPack getCommand(User user){
         String commandLine = KeyboardReader.input("input your command: ");
         String[] input = commandLine != null ? commandLine.split(" ",2) : null;
         if (input == null || input.length == 0) return null;
         Commands type = findType(input[0]);
         CTransitPack cmd = null;
         if (input.length > 1 && type != null) {
-            cmd = new CTransitPack(type, input[1]);
+            cmd = new CTransitPack(type, input[1], user);
         }
         else if (type != null){
-            cmd = new CTransitPack(type, null);
+            cmd = new CTransitPack(type, null, user);
         }
         return cmd;
     }
@@ -27,7 +28,7 @@ public class ClientCommander {
         System.out.println(message);
     };
 
-    private Commands findType(String s) {
+    private static Commands findType(String s) {
         switch (s.toLowerCase(Locale.ROOT)){
             case "help": return Commands.HELP;
             case "info": return Commands.INFO;
@@ -45,7 +46,6 @@ public class ClientCommander {
             case "filter_by_number_of_participants": return Commands.FILTER_NUM;
             case "filter_less_than_number_of_participans": return Commands.FILTER_LESS;
             case "ping": return Commands.PING;
-            case "connect": return Commands.CONNECT;
         }
         return null;
     }

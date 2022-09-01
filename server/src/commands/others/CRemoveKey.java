@@ -3,6 +3,7 @@ package commands.others;
 import commands.Command;
 import common.CTransitPack;
 import common.Commands;
+import common.ReplyPack;
 import main.CollectionHolder;
 import main.Tools;
 
@@ -21,13 +22,13 @@ public class CRemoveKey extends Command {
     }
 
     @Override
-    public boolean execute(CollectionHolder cHolder) {
+    public ReplyPack execute(CollectionHolder cHolder) {
         if (Tools.regSearch(this.getParam(), "\\D")) {
             System.out.println("!!!wrong id!!!");
-            return false;
+            return new ReplyPack(Commands.REMOVE_KEY, false);
         }
         cHolder.deleteElement(this.getParam());
-        return true;
+        return new ReplyPack(Commands.REMOVE_KEY, true);
     }
 
 }

@@ -4,6 +4,8 @@ import collections.CollectionCreator;
 import collections.MusicBand;
 import common.CTransitPack;
 import common.Commands;
+import common.ReplyPack;
+import common.User;
 import main.CollectionHolder;
 
 import java.io.Serializable;
@@ -16,17 +18,21 @@ public abstract class Command implements Serializable {
     private final Commands type;
     private final String param;
     private MusicBand receivedBand;
+    private final User user;
+
 
     public Command(Commands type, String param) {
         this.type = type;
         this.param = param;     // can be null
         if (this.type.isElementTaking()) initElement();
+        this.user = new User("admin", "qwerty");
     }
 
     public Command(CTransitPack transitPack){
         this.type = transitPack.getType();
         this.param = transitPack.getParam();
         this.receivedBand = transitPack.getReceivedBand();
+        this.user = transitPack.getUser();
     }
 
     /**
@@ -34,13 +40,13 @@ public abstract class Command implements Serializable {
      *
      * @param cHolder - database to operate with
      */
-    public abstract boolean execute(CollectionHolder cHolder);
+    public abstract ReplyPack execute(CollectionHolder cHolder);
 
     /**
      * input element while you create Cmd object
      */
     private void initElement() {
-        this.receivedBand = CollectionCreator.getClientBand();
+        this.receivedBand = CollectionCreator.getClientBand(this.user);
         System.out.println("Command: Element initialised");
     }
 

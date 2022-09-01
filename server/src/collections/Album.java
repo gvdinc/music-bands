@@ -17,7 +17,13 @@ public class Album implements Serializable {
      */
     private float sales; //Значение поля должно быть больше 0
 
-
+    public Album(){
+        super();
+    }
+    public Album(String name, float sales){
+        this.name = name;
+        this.sales = sales;
+    }
     /**
      * getter for {@link #sales}
      */

@@ -3,6 +3,7 @@ package commands.output;
 import commands.Command;
 import common.CTransitPack;
 import common.Commands;
+import common.ReplyPack;
 import main.CollectionHolder;
 
 /**
@@ -19,10 +20,10 @@ public class CMin extends Command {
     }
 
     @Override
-    public boolean execute(CollectionHolder cHolder) {
+    public ReplyPack execute(CollectionHolder cHolder) {
         String res = (cHolder.getMinGroup().toString());
         System.out.println(res != null ? "group with minimal id: " + res : "empty collection");
-        return true;
+        return new ReplyPack(Commands.MIN_BY_ID, true, res);
     }
 
 }

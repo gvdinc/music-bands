@@ -3,6 +3,7 @@ package commands.others;
 import commands.Command;
 import common.CTransitPack;
 import common.Commands;
+import common.ReplyPack;
 import main.CollectionHolder;
 
 /**
@@ -19,13 +20,13 @@ public class CReplaceIfLower extends Command {
     }
 
     @Override
-    public boolean execute(CollectionHolder cHolder) {
+    public ReplyPack execute(CollectionHolder cHolder) {
         int id;
         try {
             id = new Integer(this.getParam());
         } catch (NumberFormatException e) {
             System.out.println("!!!wrong id!!!");
-            return false;
+            return new ReplyPack(Commands.REPLACE_IF_LOWER, false);
         }
 
         this.getReceivedBand().setId(id);
@@ -35,7 +36,7 @@ public class CReplaceIfLower extends Command {
         } else {
             System.out.println("Element with this id has equals or bigger amount of participants");
         }
-        return true;
+        return new ReplyPack(Commands.REPLACE_IF_LOWER, true);
     }
 
 }

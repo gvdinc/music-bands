@@ -1,11 +1,20 @@
 package collections;
 
+
 import java.io.Serializable;
 
 /**
  * object for {@link MusicBand} contains coordinates of headquarters of the band
  */
 public class Coordinates implements Serializable {
+
+    public Coordinates(float x, Float y){
+        this.x = x;
+        this.y = y;
+    }
+    public Coordinates(){
+        super();
+    }
 
     /**
      * coordinate x
