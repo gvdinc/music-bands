@@ -18,6 +18,11 @@ public abstract class Command implements Serializable {
     private final Commands type;
     private final String param;
     private MusicBand receivedBand;
+
+    public User getUser() {
+        return user;
+    }
+
     private final User user;
 
 

@@ -7,8 +7,6 @@ import java.util.Date;
 //name, coordinates, creation, participants, singles, establishment, genre, best Album
 
 /**
- * Object of Music band's data to store in {@link main.CollectionHolder}
- *
  * @author Grebenkin Vadim
  */
 
@@ -73,11 +71,11 @@ public class MusicBand implements Serializable {
             System.out.println("MusicBand " + this.id + ": no \"coordinates\"!");
             isCorrect = false;
         }
-        if (this.numberOfParticipants != null && this.numberOfParticipants <= 0) {
+        if (this.numberOfParticipants != null && this.numberOfParticipants < 0) {
             System.out.println("MusicBand " + this.id + ": invalid number of participants!");
             this.numberOfParticipants = null;
         }
-        if (this.singlesCount != null && this.singlesCount <= 0) {
+        if (this.singlesCount != null && this.singlesCount < 0) {
             System.out.println("MusicBand " + this.id + ": invalid number of singles!");
             this.numberOfParticipants = null;
         }
@@ -85,7 +83,7 @@ public class MusicBand implements Serializable {
             System.out.println("MusicBand " + this.id + ": no \"genre\"!");
             isCorrect = false;
         }
-        if (this.bestAlbum != null && (this.bestAlbum.getSales() <= 0 || this.bestAlbum.getName() == null)) {
+        if (this.bestAlbum != null && (this.bestAlbum.getSales() < 0 || this.bestAlbum.getName() == null)) {
             System.out.println("MusicBand " + this.id + ": invalid Best Album");
             isCorrect = false;
         }
@@ -114,17 +112,18 @@ public class MusicBand implements Serializable {
                 ", singlesCount=" + singlesCount +
                 ", genre=" + genre +
                 ", bestAlbum=" + bestAlbum +
+                ", user=" + username +
                 '}';
         return res;
     }
 
 
     public void setBestAlbum(Album bestAlbum) {
-        this.bestAlbum = bestAlbum;
+        if (bestAlbum.getName() != null && bestAlbum.getSales() > 0) this.bestAlbum = bestAlbum;
     }
 
     public void setSinglesCount(Long singlesCount) {
-        this.singlesCount = singlesCount;
+        if (singlesCount > 0){ this.singlesCount = singlesCount; }
     }
 
     public void setGenre(String param) {
@@ -150,7 +149,7 @@ public class MusicBand implements Serializable {
     }
 
     public void setNumberOfParticipants(Long numberOfParticipants) {
-        this.numberOfParticipants = numberOfParticipants;
+        if (numberOfParticipants > 0) this.numberOfParticipants = numberOfParticipants;
     }
 
     public void setCoordinates(Coordinates coordinates) {
@@ -158,6 +157,7 @@ public class MusicBand implements Serializable {
     }
 
     public void setUser(User user) {
+        if (user == null) return;
         this.username = user.getUsername();
     }
 

@@ -55,7 +55,7 @@ public class Connector{
             // Отправьте пакет клиенту
             try {
                 socket.send(outputPacket);
-                System.out.println("ReplyPack " + pack + " is sent to client " + client);
+                System.out.println("ReplyPack " + pack + " is sent to client " + client + '\n');
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -75,7 +75,7 @@ public class Connector{
         System.out.println("Connector: waiting for request");
 
         datagramSocket.receive(inputPacket);
-        System.out.println(Arrays.toString(inputPacket.getData()));
+        //System.out.println(Arrays.toString(inputPacket.getData()));
         if (inputPacket.getData().length == 0) return null;
         return inputPacket;
     }

@@ -12,7 +12,6 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Operator {
@@ -37,14 +36,9 @@ public class Operator {
     }
 
     public Boolean appendBand(MusicBand band){ // TODO not working
-        String sql = String.format("insert into %s" +
-                "    (id, name, coordinate_x, coordinate_y, genre, number_of_participants," +
-                "    singles_count, creation_date, username, best_album_name, best_album_sales)"+
 
-                "    VALUES (DEFAULT, %s, %f, %f, %s, %d, %d, DEFAULT, %s, %s, %f)", URLS.BANDS.getPass(),
-                    band.getName(), band.getCoordinates().getX(), band.getCoordinates().getY(), band.getGenre(), band.getNumberOfParticipants(),
-                    band.getSinglesCount(), band.getUsername(), band.getBestAlbum().getName(), band.getBestAlbum().getSales()
-        );
+        String sql = SqlFormatter.buildAppendRequest(band);
+        if (sql == null) return false;
         try {
             wrightLock.lock();
             int updated = statement.executeUpdate(sql);
@@ -57,14 +51,7 @@ public class Operator {
     }
 
     public Boolean updateBand(MusicBand band){
-        String sql = String.format("update %s set" +
-                        "    name = %s, coordinate_x = %f, coordinate_y = %f, genre = %s, number_of_participants = %d," +
-                        "    singles_count = %d, best_album_name = %s, best_album_sales = %f" +
-                        "    where id = %d and username = %s",
-                URLS.BANDS.getPass(),
-                band.getName(), band.getCoordinates().getX(), band.getCoordinates().getY(), band.getGenre(), band.getNumberOfParticipants(),
-                band.getSinglesCount(), band.getBestAlbum().getName(), band.getBestAlbum().getSales(),
-                band.getId(), band.getUsername());
+        String sql = SqlFormatter.buildUpdateRequest(band);
         try {
             wrightLock.lock();
             int updated = statement.executeUpdate(sql);
@@ -78,11 +65,10 @@ public class Operator {
 
     public Boolean clearMap(String username){
         try {
-            statement.execute(Requester.DELETE_USER_BANDS.get(new String[]{username}));
-            return true;
+            return statement.execute(Requests.DELETE_USER_BANDS.get(new String[]{username}));
         } catch (SQLException e) {
             e.printStackTrace();
-            return true;
+            return false;
         }
     }
 
@@ -91,11 +77,10 @@ public class Operator {
 
         try {
             readLock.lock();
-            ResultSet res = statement.executeQuery(Requester.USER_HASH.get(args));
+            ResultSet res = statement.executeQuery(Requests.USER_HASH.get(args));
             readLock.unlock();
             System.out.println(res + " " + user.getUsername() + " - authorization");
             res.next();
-            System.out.println(res.getString("passwordHash"));
             return res.getString("passwordHash").trim().equals(encodePass(user.getPassword()));
         } catch (SQLException throwable) {
             throwable.printStackTrace();
@@ -108,9 +93,9 @@ public class Operator {
         String[] args = {user.getUsername(), encodePass(user.getPassword())};
         try {
             wrightLock.lock();
-            statement.execute(Requester.ADD_USER.get(args));
+            statement.execute(Requests.ADD_USER.get(args));
             wrightLock.unlock();
-            System.out.println("registration " + user.getUsername() + "authorization");
+            System.out.println("registration " + user.getUsername() + " succeeded");
             return true;
         } catch (SQLException throwable) {
             throwable.printStackTrace();
@@ -141,14 +126,14 @@ public class Operator {
 
     private ResultSet loadData(){
         try {
-            return statement.executeQuery(Requester.LOAD_DATA.get(null));
+            return statement.executeQuery(Requests.LOAD_DATA.get(null));
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    public boolean executeStatement(Requester request){
+    public boolean executeStatement(Requests request){
         try{
             statement.execute(request.get(null));
             return true;

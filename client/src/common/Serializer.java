@@ -35,7 +35,7 @@ public class Serializer {
             System.out.println("Not enough memory");
             return null;
         } catch (IOException | ClassNotFoundException e) {
-            System.out.println("Serialization error. Class was not found");
+            //System.out.println("Serialization error. Class was not found");
             //e.printStackTrace();
             //System.exit(0);
             return null;

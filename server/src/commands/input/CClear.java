@@ -21,7 +21,7 @@ public class CClear extends Command {
 
     @Override
     public ReplyPack execute(CollectionHolder cHolder) {
-        cHolder.clearMap(getReceivedBand().getUsername());
+        cHolder.clearMap(this.getUser().getUsername());
         return new ReplyPack(Commands.CLEAR, true);
     }
 
