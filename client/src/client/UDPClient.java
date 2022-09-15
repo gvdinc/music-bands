@@ -34,6 +34,7 @@ public class UDPClient implements Runnable {
                     connector.sendCommand(authorisationTransitPack);
                     ReplyPack replyPack = connector.getReplyAttempt();
                     Display.displayPackData(replyPack);
+                    if (replyPack == null) {connector.disconnect(); break;}
                     if ((replyPack.getCommandType() == Commands.AUTHORIZE || replyPack.getCommandType() == Commands.REGISTER) && replyPack.isOperationSucceeded()){
                         this.connector.setClientState(ClientState.AUTHORISED);
                     }
@@ -41,7 +42,7 @@ public class UDPClient implements Runnable {
                 }
 
                 case AUTHORISED: {
-                    CTransitPack transitPack = commander.getCommand(user);
+                    CTransitPack transitPack = ClientCommander.getCommand(user);
                     if (transitPack == null) continue;
                     transitPack.setUser(user);
                     connector.sendCommand(transitPack);
@@ -50,7 +51,6 @@ public class UDPClient implements Runnable {
                     if (replyPack != null) Display.displayPackData(replyPack);
                     else {connector.disconnect(); connector.flushMessages();
                     }
-                    continue;
                 }
             }
         }
