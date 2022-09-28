@@ -27,7 +27,7 @@ public class CRemoveKey extends Command {
             System.out.println("!!!wrong id!!!");
             return new ReplyPack(Commands.REMOVE_KEY, false);
         }
-        cHolder.deleteElement(this.getParam());
+        cHolder.deleteElement(this.getParam(), this.getUser().getUsername());
         return new ReplyPack(Commands.REMOVE_KEY, true);
     }
 

@@ -32,8 +32,9 @@ public class CFilterByNum extends Command {
             return new ReplyPack(Commands.FILTER_NUM, false);
         }
         Predicate<MusicBand> numberFilter = musicBand -> Objects.equals(musicBand.getNumberOfParticipants(), new Long(this.getParam()));
-        cHolder.getMapStream().filter(numberFilter).forEach(System.out::println);
-        return new ReplyPack(Commands.FILTER_NUM, true);
+        StringBuilder builder = new StringBuilder();
+        cHolder.getMapStream().filter(numberFilter).forEach(builder::append);
+        return new ReplyPack(Commands.FILTER_NUM, true, builder.toString());
     }
 
 }

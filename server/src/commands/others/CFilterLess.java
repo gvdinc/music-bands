@@ -30,8 +30,9 @@ public class CFilterLess extends Command {
             return new ReplyPack(Commands.FILTER_LESS, false);
         }
         Predicate<MusicBand> numberFilter = musicBand -> musicBand.getNumberOfParticipants() != null && musicBand.getNumberOfParticipants() < new Long(this.getParam());
-        cHolder.getMapStream().filter(numberFilter).forEach(System.out::println);
-        return new ReplyPack(Commands.FILTER_LESS, true);
+        StringBuilder builder = new StringBuilder();
+        cHolder.getMapStream().filter(numberFilter).forEach(builder::append);
+        return new ReplyPack(Commands.FILTER_LESS, true, builder.toString());
     }
 
 }

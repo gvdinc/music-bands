@@ -2,7 +2,11 @@ package client;
 
 public class Main {
     public static void main(String[] args) {
-
+        System.out.println( "  @@@@@@@@@      @@@@@@@@   ITMO\n" +
+                            " @@       @@    @@       @  musicBands\n" +
+                            "@@   @@@@  @@  @@  @      @ client\n" +
+                            " @@    @@   @@@@   @     @  PoweredBy\n" +
+                            "  @@@@@@@    @@    @@@@@@   GVD\n");
 
         UDPClient client = null;
         int serverPort;
@@ -16,7 +20,7 @@ public class Main {
         }
         client = new UDPClient(serverPort);
         client.run();
-
+        client.getConnector().closeChannel();
         //namespace
         //common package; serialize command
         //IOException

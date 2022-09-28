@@ -1,8 +1,8 @@
 package database;
 
 public enum URLS {
-    BANDS("\"musicBands\".bands"),
-    USERS("\"musicBands\".users");
+    BANDS("\"s335053\".bands"),
+    USERS("\"s335053\".users");
 
     final private String pass;
 

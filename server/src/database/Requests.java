@@ -10,6 +10,13 @@ public enum Requests {
         }
     },
 
+    DELETE_USER_BAND{
+        @Override
+        public String get(String[] args){
+            return "DELETE FROM "+ URLS.BANDS.getPass() +" WHERE id = " + args[1] + " AND username = '" + args[0] + "'";
+        }
+    },
+
     LOAD_DATA {
         @Override
         public String get(String[] args) {

@@ -1,17 +1,12 @@
 package main;
 
-import collections.Album;
-import collections.Coordinates;
 import collections.MusicBand;
-import collections.StringXMLItem;
 import database.Operator;
 import main.Comparators.ComparatorID;
 
-import java.io.*;
-import java.sql.ResultSet;
+import java.io.BufferedInputStream;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Stream;
 
 /**
@@ -95,8 +90,7 @@ public class CollectionHolder {
     public String mapInfo() {
         String message = "";
         message += ('\n');
-        message += ("app.collections in storage " + "(" + this.mass.length + ")");
-        message += ("creation date, time: " + this.creationDate);
+        message += ("app.collections in storage " + "(" + this.map.size() + ")\n");
         message += ("type of collection: " + this.map.getClass().getName());
         message += ('\n');
         return message;
@@ -120,6 +114,12 @@ public class CollectionHolder {
         this.operator.appendBand(newBand);
         loadData();
         System.out.println("Holder: successfully added");
+    }
+
+    public synchronized void updateGroup(MusicBand newBand) {
+        this.operator.updateBand(newBand);
+        loadData();
+        System.out.println("Holder: successfully updated");
     }
 
     /**
@@ -147,7 +147,7 @@ public class CollectionHolder {
      *
      * @param id - id of deleting element
      */
-    public void deleteElement(String id) {
+    public void deleteElement(String id, String user) {
         Integer ID;
         try {
             ID = new Integer(id);
@@ -155,61 +155,21 @@ public class CollectionHolder {
             e.printStackTrace();
             return;
         }
-
-        this.map.remove(ID);
-        this.mass = Tools.removeID(this.mass, ID);
-        //this.sort(HolderSortTypes.DEFAULT);
+        deleteElement(ID, user);
     }
 
-    public void deleteElement(Integer id) {
-        String message = map.get(id).getName();
-        this.map.remove(id);
-        this.mass = Tools.removeID(this.mass, id);
-        System.out.println("Server: group " + message + "deleted");
+    public void deleteElement(Integer id, String user) {
+        this.operator.deleteElem(id, user);
+        loadData();
+        System.out.println("Server: group " + id + " deleted");
     }
 
-    /**
-     * Prints the {@link #map} element into client's console by its position in sorted array
-     *
-     * @param position - position of required element
-     */
-    public void ReadCollectionElement(int position) {
-        if (mass.length >= position - 1) {
-            System.out.println(this.map.get(mass[position - 1]).toString());
-        } else {
-            System.out.println("no elements requires these parameters");
-        }
-    }
 
     /**
      * Removes all {@link #map} element's which Number of participants is lower than one
      */
-    @Deprecated
-    public void removeLower(Long numberOfParticipants) {
-        if (numberOfParticipants == null) {
-            return;
-        }
-        Vector<Integer> vector = new Vector<Integer>();
-        for (int i = 0; i != mass.length; i++) {
-            Long current = this.map.get(mass[i]).getNumberOfParticipants();
-            if (current != null) {
-                if (current < numberOfParticipants) {
-                    vector.add(mass[i]);
-                }
-            }
-        }
-        // deleting
-        for (Integer i : vector) {
-            this.deleteElement(i.toString());
-        }
-    }
 
-    /**
-     * getter for {@link #mass}
-     */
-    public int[] getIDs() {
-        return this.mass;
-    }
+
 
     /**
      * Getter for NumberOfParticipants of the {@link #map} element with current id
@@ -221,16 +181,6 @@ public class CollectionHolder {
         if (this.map.get(bandID) != null)
             return this.map.get(bandID).getNumberOfParticipants();
         else return null;
-    }
-
-    /**
-     * replaces the existing {@link #map} element by a new one
-     *
-     * @param newBand - new Element
-     *                if there is no such element it will add it
-     */
-    public void replaceGroup(MusicBand newBand) {
-        this.map.put(newBand.getId(), newBand);
     }
 
     public MusicBand getMinGroup() {

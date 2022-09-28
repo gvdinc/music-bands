@@ -55,12 +55,15 @@ public class CollectionCreator {
     protected static Coordinates getCoordinates() {
         Coordinates resCord = new Coordinates();
         String[] coordinates = null;
+        boolean invalid = false;
         while (!resCord.isCorrect()) {
+            if (invalid) coordinates = null;
             while (coordinates == null || coordinates.length != 2) {
                 String input = KeyboardReader.input("Input coordinates x and y (float, separator = \" \")");
-                coordinates = input != null ? input.split(" ") : null;
+                coordinates = (input != null) ? input.split(" ") : null;
             }
             resCord.setAll(new Float(coordinates[0]), new Float(coordinates[1]));
+            if (!resCord.isCorrect()){invalid = true; System.out.println("Incorrect value of the coordinate!");}
         }
         return resCord;
     }

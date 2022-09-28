@@ -19,9 +19,11 @@ public class Operator {
     private final ReentrantReadWriteLock.ReadLock readLock = lock.readLock();
     private final ReentrantReadWriteLock.WriteLock wrightLock = lock.writeLock();
 
-    static final String DB_URL = "jdbc:postgresql://localhost:5432/musicBands";
+    static final String DB_URL = "jdbc:postgresql://localhost:5432/studs";
+    //static final String DB_URL = "jdbc:postgresql://localhost:5432/musicBands";
     private static final String username = "s335053";
-    private static final String password = "klx776";
+    private static final String password = "6N6CeoJrpQ4IsRCx";
+    //private static final String password = "klx776";
     private Connection connection;
     private Statement statement;
     private boolean isConnected = false;
@@ -35,7 +37,7 @@ public class Operator {
         }
     }
 
-    public Boolean appendBand(MusicBand band){ // TODO not working
+    public Boolean appendBand(MusicBand band){
 
         String sql = SqlFormatter.buildAppendRequest(band);
         if (sql == null) return false;
@@ -72,6 +74,15 @@ public class Operator {
         }
     }
 
+    public Boolean deleteElem(Integer id, String user) {
+        try {
+            return statement.execute(Requests.DELETE_USER_BAND.get(new String[]{user, id.toString()}));
+        }catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public Boolean authorize(User user) {
         String[] args = {user.getUsername()};
 
@@ -98,7 +109,7 @@ public class Operator {
             System.out.println("registration " + user.getUsername() + " succeeded");
             return true;
         } catch (SQLException throwable) {
-            throwable.printStackTrace();
+            System.out.println("User "+user+" not registered because name is already in use");
             return false;
         }
     }
@@ -190,4 +201,6 @@ public class Operator {
             System.out.println("ERROR: can not disconnect!");
         }
     }
+
+
 }

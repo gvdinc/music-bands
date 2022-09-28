@@ -31,7 +31,7 @@ public class CReplaceIfLower extends Command {
 
         this.getReceivedBand().setId(id);
         if (this.getReceivedBand().getNumberOfParticipants() < cHolder.getNumberOfParticipants(id)) {
-            cHolder.replaceGroup(this.getReceivedBand());
+            cHolder.updateGroup(this.getReceivedBand());
             System.out.println("finished");
         } else {
             System.out.println("Element with this id has equals or bigger amount of participants");

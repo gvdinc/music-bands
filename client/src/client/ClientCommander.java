@@ -44,7 +44,7 @@ public class ClientCommander {
             case "remove_lower_key": return Commands.REMOVE_LOWER_KEY;
             case "min_by_id": return Commands.MIN_BY_ID;
             case "filter_by_number_of_participants": return Commands.FILTER_NUM;
-            case "filter_less_than_number_of_participans": return Commands.FILTER_LESS;
+            case "filter_less_than_number_of_participants": return Commands.FILTER_LESS;
             case "ping": return Commands.PING;
         }
         return null;

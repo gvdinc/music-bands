@@ -28,3 +28,4 @@ hs_err_pid*
 /result.xml
 /output.txt
 /test/
+/server/src/database/request.sql

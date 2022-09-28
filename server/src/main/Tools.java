@@ -88,35 +88,36 @@ public class Tools {
         return m.find();
     }
 
-    /**
-     * method to remove element from array
-     *
-     * @param mass - existing array
-     * @param id   - id of the deleting element
-     * @return returns new array without this element, of existing array if element is not found
-     */
-    public static int[] removeID(int[] mass, Integer id) {
-        int[] res = new int[mass.length - 1];
-        if (mass.length > 1) {
-            int f = 0;
-            for (int i = 0; i != mass.length; i++) {
-                if (f == mass.length - 1 && mass[i] != id) {
-                    return mass;
-                }
-                if (mass[i] != id) {
-                    res[f] = mass[i];
-                    f++;
-                }
-            }
-            return res;
-        } else {
-            if (mass[0] == id) {
-                return new int[0];
-            } else {
-                return res;
-            }
-        }
-    }
+//    /**
+//     * method to remove element from array
+//     *
+//     * @param mass - existing array
+//     * @param id   - id of the deleting element
+//     * @return returns new array without this element, of existing array if element is not found
+//     */
+//    @Deprecated
+//    public static int[] removeID(int[] mass, Integer id) {
+//        int[] res = new int[mass.length - 1];
+//        if (mass.length > 1) {
+//            int f = 0;
+//            for (int i = 0; i != mass.length; i++) {
+//                if (f == mass.length - 1 && mass[i] != id) {
+//                    return mass;
+//                }
+//                if (mass[i] != id) {
+//                    res[f] = mass[i];
+//                    f++;
+//                }
+//            }
+//            return res;
+//        } else {
+//            if (mass[0] == id) {
+//                return new int[0];
+//            } else {
+//                return res;
+//            }
+//        }
+//    }
 
     /**
      * trying to reach file by its pass-link

@@ -12,17 +12,11 @@ import java.nio.channels.DatagramChannel;
 import java.nio.charset.StandardCharsets;
 
 public class Connector {
-    private SocketAddress address;
+    private final SocketAddress address;
     private DatagramChannel channel;
     private ClientState clientState = ClientState.OFFLINE;
     private static final int bufferSize = 2024;
     public static final int connectionDelay = 3000;
-
-    public static String getClientIP() {
-        return clientIP;
-    }
-
-    public static String clientIP = "127.0.0.1";
 
 
     public Connector(SocketAddress address){

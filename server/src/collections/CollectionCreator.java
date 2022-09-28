@@ -56,7 +56,7 @@ public class CollectionCreator {
         while (!resCord.isCorrect()) {
             while (coordinates == null || coordinates.length != 2) {
                 String input = KeyboardReader.input("Input coordinates x and y (float, separator = \" \")");
-                coordinates = input != null ? input.split(" ") : null;
+                coordinates = (input != null) ? input.split(" ") : null;
             }
             resCord.setAll(new Float(coordinates[0]), new Float(coordinates[1]));
         }

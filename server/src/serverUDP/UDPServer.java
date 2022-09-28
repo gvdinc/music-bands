@@ -4,7 +4,6 @@ import commands.Command;
 import common.CTransitPack;
 import common.Commands;
 import common.ReplyPack;
-import common.User;
 import database.Operator;
 import main.CollectionHolder;
 import main.CommandExecutor;
@@ -23,7 +22,7 @@ public class UDPServer implements Runnable{
     private final CollectionHolder cHolder;
     private ServerState serverState;
     public final Operator operator;
-    private CommandExecutor commandExecutor;
+    private final CommandExecutor commandExecutor;
     private final ExecutorService getService = Executors.newCachedThreadPool();
     private final ExecutorService runService = Executors.newFixedThreadPool(3);
 
@@ -66,6 +65,10 @@ RUN:    while (serverState != ServerState.OFFLINE) {
     }
     private static String encode(byte[] buffer) {
         return new String(buffer, StandardCharsets.UTF_8).trim();
+    }
+
+    public CommandExecutor getCommandExecutor() {
+        return commandExecutor;
     }
 
 
@@ -112,7 +115,9 @@ RUN:    while (serverState != ServerState.OFFLINE) {
                 }
                 else if (transitPack.getType() == Commands.REGISTER){ // 2 - t/f
                     Boolean isRegistered = operator.register(this.transitPack.getUser());
-                    Connector.sendMessage(serverSocket, new ReplyPack(Commands.REGISTER, isRegistered), this.client);
+                    Connector.sendMessage(serverSocket, (isRegistered) ? (new ReplyPack(Commands.REGISTER, isRegistered)) :
+                            new ReplyPack(Commands.REGISTER, isRegistered, "Username already in use!")
+                            , this.client);
                 }
                 else {Connector.sendMessage(serverSocket, new ReplyPack(Commands.AUTHORIZE, false), client);}
             } // unauthorized reacting

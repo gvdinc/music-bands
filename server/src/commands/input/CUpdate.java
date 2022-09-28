@@ -20,30 +20,21 @@ public class CUpdate extends Command {
         super(transitPack);
     }
 
-
     @Override
     public ReplyPack execute(CollectionHolder cHolder) {
-        System.out.println(this.getParam());
-        if (Tools.regSearch(this.getParam(), "\\D")) {
+        System.out.println(getParam());
+        if (Tools.regSearch(getParam(), "\\D"))
             System.out.println("!!!wrong id!!!");
-            return new ReplyPack(Commands.UPDATE, false);
-        }
-
-        if (this.getReceivedBand().isCorrect()) {
+        if (getReceivedBand().isCorrect()) {
             int id;
             try {
-                id = new Integer(this.getParam());
+                id = new Integer(getParam());
             } catch (NumberFormatException e) {
                 System.out.println("!!!wrong id!!!");
                 return new ReplyPack(Commands.UPDATE, false);
             }
-
-            if (id > cHolder.getMapLength()) {
-                System.out.println("!!!wrong id!!!");
-                return new ReplyPack(Commands.UPDATE, false);
-            }
-            this.getReceivedBand().setId(id);
-            cHolder.addNewGroup(this.getReceivedBand());
+            getReceivedBand().setId(id);
+            cHolder.updateGroup(getReceivedBand());
             System.out.println("finished");
             return new ReplyPack(Commands.UPDATE, true);
         }

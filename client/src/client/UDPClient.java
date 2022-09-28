@@ -14,6 +14,11 @@ public class UDPClient implements Runnable {
     private final ClientCommander commander = new ClientCommander();
     private User user;
     private boolean notRegistered = true;
+
+    public Connector getConnector() {
+        return connector;
+    }
+
     private final Connector connector;
 
     public UDPClient(int serverPort) {

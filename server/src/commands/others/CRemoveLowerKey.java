@@ -37,7 +37,10 @@ public class CRemoveLowerKey extends Command {
         cHolder.getMapStream().filter(numberFilter).forEach(mB -> {
             queueToDelete.push(mB.getId());
         });
-        queueToDelete.forEach(cHolder::deleteElement);
+        for (Integer i: queueToDelete
+        ) {
+            cHolder.deleteElement(i, this.getUser().getUsername());
+        }
         return new ReplyPack(Commands.REMOVE_LOWER_KEY, true);
     }
 

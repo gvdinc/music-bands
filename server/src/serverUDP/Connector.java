@@ -1,21 +1,25 @@
 package serverUDP;
 
-import commands.Command;
 import common.CTransitPack;
 import common.ReplyPack;
 import common.Serializer;
-import main.CommandExecutor;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.ServerSocket;
 import java.net.SocketException;
-import java.util.Arrays;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /** Module of getting connections and returns commands */
 public class Connector{
     public static final int bufferSize = 2048;
-    private static final int awaitingTime = 200000;
+    private static final int awaitingTime = 3600000;
+    private static final int MIN_PORT_NUMBER = 30000;
+    private static final int MAX_PORT_NUMBER = 31999;
+    private static final SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
+
 
     public static DatagramSocket getSocket(int serverPort) throws SocketException {
         DatagramSocket datagramSocket = new DatagramSocket(serverPort);
@@ -73,10 +77,54 @@ public class Connector{
         DatagramPacket inputPacket = new DatagramPacket(receivingDataBuffer, receivingDataBuffer.length);
         datagramSocket.setSoTimeout(awaitingTime);
         System.out.println("Connector: waiting for request");
+        try {
+            datagramSocket.receive(inputPacket);
+        } catch (SocketException ignored) {
+            return null;
+        }
 
-        datagramSocket.receive(inputPacket);
         //System.out.println(Arrays.toString(inputPacket.getData()));
         if (inputPacket.getData().length == 0) return null;
+        Date date = new Date(System.currentTimeMillis());
+
+        System.out.println(formatter.format(date)+": got pack from "+inputPacket.getAddress().toString());
         return inputPacket;
     }
+
+    /**
+     * Checks to see if a specific port is available.
+     *
+     * @param port the port to check for availability
+     */
+    public static boolean available(int port){
+        if (port < MIN_PORT_NUMBER || port > MAX_PORT_NUMBER) {
+            return false;
+        }
+
+        ServerSocket ss = null;
+        DatagramSocket ds = null;
+        try {
+            ss = new ServerSocket(port);
+            ss.setReuseAddress(true);
+            ds = new DatagramSocket(port);
+            ds.setReuseAddress(true);
+            return true;
+        } catch (IOException e) {
+        } finally {
+            if (ds != null) {
+                ds.close();
+            }
+
+            if (ss != null) {
+                try {
+                    ss.close();
+                } catch (IOException e) {
+                    /* should not be thrown */
+                }
+            }
+        }
+
+        return false;
+    }
 }
+

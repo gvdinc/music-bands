@@ -11,7 +11,7 @@ public enum Commands {
     SHOW(   "show", false),
     INSERT( "insert", true),
     UPDATE( "update", true),
-    REMOVE_KEY("remove_key", true),
+    REMOVE_KEY("remove_key", false),
     CLEAR("clear", false),
     EXECUTE("   execute_script", false),
     EXIT("exit", false),
